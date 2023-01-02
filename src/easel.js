@@ -64,8 +64,11 @@ function loadMarkdown(path) {
 
 let CDN_PREFIX = "/";
 
-if (!isLocalhost())
-    CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel/"
+if (!isLocalhost()) {
+    var _script_src = document.currentScript.src;
+    CDN_PREFIX = _script_src.substring(0, _script_src.substring(0, _script_src.lastIndexOf("/")).lastIndexOf("/")) + "/"
+    console.log("CDN Prefix: ", CDN_PREFIX)
+}
 
 // External Deps
 
