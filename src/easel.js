@@ -1,3 +1,7 @@
+function isLocalhost() {
+    return (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+}
+
 function addCSS(href, rel = "stylesheet") {
     console.log(href)
     var link = document.createElement("link");
@@ -14,52 +18,6 @@ function addJS(src) {
     var script = document.createElement('script');
     script.src = src;
     document.getElementsByTagName("head")[0].appendChild(script);
-}
-
-function createOrGetElement(id) {
-
-    var element = document.getElementById(id);
-
-    if (!element) {
-        element = document.createElement("div");
-        element.id = id;
-        document.body.appendChild(element);
-    }
-
-    return element;
-}
-
-function elementExists(id) {
-    return document.getElementById(id) !== null;
-}
-
-function isLocalhost() {
-    return (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-}
-
-function loadFile(path) {
-    return new Promise((resolve, reject) => {
-        fetch(path).then(async data => {
-            if (data.ok) {
-                const content = await data.text();
-
-                resolve({
-                    lastModified: data.headers.get('Last-Modified'),
-                    content: content
-                });
-            }
-            else
-                reject("No file")
-        })
-
-    })
-}
-
-function loadMarkdown(path) {
-    var converter = new showdown.Converter();
-    return loadFile(path).then(data => {
-        return { ...data, content: converter.makeHtml(data.content) }
-    });
 }
 
 let CDN_PREFIX = "/";
@@ -79,77 +37,19 @@ addCSS("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=
 
 // Internal Deps
 
+addJS(CDN_PREFIX + "src/common.js");
 addCSS(CDN_PREFIX + "src/styles.css");
 
-function appendEaselFooter() {
-    var el = document.createElement("div");
-    el.id = "footer";
-    el.innerHTML = "Created on <a target='_blank' href='https://github.com/Vochsel/easel'>Easel</a>"
-    document.body.appendChild(el)
-}
-
-async function loadEaselJSON(dir) {
-    const metadata = await fetch(dir + "easel.json").then(data => data.json()).catch(x => null);
-
-    if (!metadata) return;
-
-    var profile = createOrGetElement("profile");
-
-    profile.innerHTML = `
-    <div id='profileHeader'>
-        <img id='headerProfile' class='profilePicture' src='${metadata.profilePicture}' width='75' height='75'/>
-        <img id='headerPicture' src='${metadata.headerPicture}' />
-    </div>
-    <span id='name'>${metadata.name}</span>
-    <span id='handle'>@${metadata.handle}</span>
-    <div id='description'>${metadata.description}</div>
-    `
-
-    document.body.prepend(profile);
-}
-
-
-function createItem(data, counter) {
-    console.log(data)
-    var d = new Date(data.lastModified);
-    var df = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }) //weekday: 'long',
-
-    var el = document.createElement("div");
-    el.className = "item";
-    el.innerHTML = `
-            <hr>
-            <div class='metadata'>#<b>${counter}</b> - ${df}</div>
-            <div class='content'>${data.content}</div>
-            `
-    container.prepend(el)
-    
-    console.log("loaded", counter)
-}
-
-async function loadContent(dir) {
-    var missedIndex = false;
-    var counter = 1;
-    var container = createOrGetElement("container");
-
-    while (!missedIndex) {
-        const data = await loadMarkdown(`${dir}/${counter}.md`)
-            .catch(err => missedIndex = true);
-
-        if (!missedIndex)
-            createItem(data, counter)
-        counter += 1;
-    }
-    console.log("Finished loading content");
-}
+// -- JS Frontend
 
 function init() {
-    loadEaselJSON(location.pathname)
+    loadEaselJSON(location.pathname).then(metadata => renderProfileHeader(metadata));
+    
     loadContent(location.pathname + "/content/feed");
 
     if (!elementExists("footer")) {
-        appendEaselFooter();
+        renderEaselFooter();
     }
 }
-
 
 window.addEventListener('load', init);
