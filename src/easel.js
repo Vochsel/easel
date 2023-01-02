@@ -48,6 +48,30 @@ addCSS("https://fonts.googleapis.com", "preconnect");
 addCSS("https://fonts.gstatic.com", "preconnect");
 addCSS("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap");
 
+async function loadEaselJSON(dir) {
+    const metadata = await fetch(dir + "easel.json").then(data => data.json()).catch(x => null);
+
+    if (!metadata) return;
+
+    var profile = document.getElementById("profile");
+
+    if (!profile) {
+        profile = document.createElement("div");
+        profile.id = "profile";
+    }
+
+
+    profile.innerHTML = `
+    <img class='profilePicture' src='${metadata.profilePicture}' width='75' height='75'/>
+    <span id='name'>${metadata.name}</span>
+    <span id='handle'>@${metadata.handle}</span>
+    <div id='description'>${metadata.description}</div>
+    `
+
+    document.body.prepend(profile);
+
+}
+
 async function loadContent(dir) {
     var missedIndex = false;
     var counter = 1;
@@ -58,8 +82,15 @@ async function loadContent(dir) {
             const data = await loadMarkdown(`${dir}/${counter}.md`).catch(err => missedIndex = true);//.then(md => document.body.innerHTML += `<hr><br>${md}<hr>`);
             console.log(data)
             if (!missedIndex) {
+                var d = new Date(data.lastModified);
+                var df = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }) //weekday: 'long',
+
                 var el = document.createElement("div");
-                el.innerHTML = `<hr>#<b>${counter}</b> - ${data.lastModified}<br/>${data.content}`
+                el.className = "item";
+                el.innerHTML = `
+                <hr>#<b>${counter}</b> - ${df}
+                <div class='content'>${data.content}</div>
+                `
                 container.prepend(el)
             }
             console.log("loaded", counter)
@@ -74,7 +105,8 @@ async function loadContent(dir) {
 }
 
 function init() {
-    loadContent("/demo/blog/content/feed");
+    loadEaselJSON(location.pathname)
+    loadContent(location.pathname + "/content/feed");
 }
 
 
