@@ -3,7 +3,6 @@ function isLocalhost() {
 }
 
 function addCSS(href, rel = "stylesheet") {
-    console.log(href)
     var link = document.createElement("link");
     link.href = href;
     link.type = "text/css";

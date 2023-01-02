@@ -88,7 +88,6 @@ function createItem(data, counter, container) {
             <div class='metadata'>#<b>${counter}</b> - ${df}</div>
             <div class='content'>${data.content}</div>
             `
-    console.log("loaded", counter)
     return el;
 
 }
@@ -121,12 +120,12 @@ async function loadContentDynamically(dir) {
 async function loadContentFromManifest(dir) {
     var container = createOrGetElement("container");
     const files = await loadManifest(dir);
-    console.log(files);
+    console.log(`Loaded manifest.txt and found ${files.length} items`)
     // for(let i = files.length - 1; i >= 0; --i) {
     for (let i = 0; i < files.length; i++) {
+        const item_name = files[i].split('.')[0];
         const data = await loadMarkdown(`${dir}/${files[i]}`)
-        console.log(data)
-        const el = createItem(data, files.length - i)
+        const el = createItem(data, item_name)
         container.append(el);
     }
 }
