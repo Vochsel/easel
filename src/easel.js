@@ -96,7 +96,10 @@ async function loadEaselJSON(dir) {
     var profile = createOrGetElement("profile");
 
     profile.innerHTML = `
-    <img class='profilePicture' src='${metadata.profilePicture}' width='75' height='75'/>
+    <div id='profileHeader'>
+        <img id='headerProfile' class='profilePicture' src='${metadata.profilePicture}' width='75' height='75'/>
+        <img id='headerPicture' src='${metadata.headerPicture}' />
+    </div>
     <span id='name'>${metadata.name}</span>
     <span id='handle'>@${metadata.handle}</span>
     <div id='description'>${metadata.description}</div>
@@ -122,7 +125,8 @@ async function loadContent(dir) {
                 var el = document.createElement("div");
                 el.className = "item";
                 el.innerHTML = `
-                <hr>#<b>${counter}</b> - ${df}
+                <hr>
+                <div class='metadata'>#<b>${counter}</b> - ${df}</div>
                 <div class='content'>${data.content}</div>
                 `
                 container.prepend(el)
