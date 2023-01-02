@@ -3,6 +3,13 @@ body {
     padding: 3vw
 }
 
+#footer {
+    margin: 0 auto;
+    color: #777;
+    font-style: italic;
+    text-align: center;
+}
+
 
 
 /* PROFILE */
@@ -41,10 +48,9 @@ body {
     font-weight: 400;
 }
 
-
-#footer {
+.item iframe {
+    width: 100%;
+    height: 30vw;
+    border: none;
     margin: 0 auto;
-    color: #777;
-    font-style: italic;
-    text-align: center;
 }
