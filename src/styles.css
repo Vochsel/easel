@@ -1,6 +1,36 @@
 body {
     font-family: 'Inter';
-    padding: 3vw
+    /* padding: 3vw; */
+    width: 50%;
+    margin: 0 auto;
+}
+
+/* Portrait */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 812px) 
+  and (orientation: portrait) { 
+    body {
+        width: 85%;
+        margin-top: 7.5%;
+    }
+
+    .item {
+        margin-top: 5vw;
+        margin-bottom: 5vw;
+    }
+
+    .item .content {
+        padding-top: 2vw;
+    }
+
+    .item .metadata {
+        padding-top: 2vw;
+    }
+
+    #headerPicture {
+        height: 500 !important;
+    }
 }
 
 #footer {
@@ -14,8 +44,26 @@ body {
 
 /* PROFILE */
 
+#profileHeader {
+    position: relative;
+    margin-bottom: 10;
+}
+
+#headerPicture {
+    object-fit: cover;
+    width: 100%;
+    height: 250;
+    margin: 0 auto;
+}
+
+#headerProfile {
+    position: absolute;
+    bottom: 15;
+    left: 2vw;
+}
+
 #profile {
-    margin-bottom: 2vw;
+    margin-bottom: 1vw;
 }
 
 
@@ -29,8 +77,9 @@ body {
 }
 
 .profilePicture {
-    border-top-right-radius: 50%;
-    border-bottom-right-radius: 50%;
+    border-radius: 50%;
+    /* border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%; */
 }
 
 
@@ -38,8 +87,8 @@ body {
 /* POSTS */
 
 #container .item .content {
-    padding-left: 1vw;
-    padding-right: 1vw;
+    padding-left: 1vh;
+    padding-right: 1vh;
 }
 
 
