@@ -106,7 +106,24 @@ async function loadEaselJSON(dir) {
     `
 
     document.body.prepend(profile);
+}
 
+
+function createItem(data, counter) {
+    console.log(data)
+    var d = new Date(data.lastModified);
+    var df = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }) //weekday: 'long',
+
+    var el = document.createElement("div");
+    el.className = "item";
+    el.innerHTML = `
+            <hr>
+            <div class='metadata'>#<b>${counter}</b> - ${df}</div>
+            <div class='content'>${data.content}</div>
+            `
+    container.prepend(el)
+    
+    console.log("loaded", counter)
 }
 
 async function loadContent(dir) {
@@ -115,27 +132,11 @@ async function loadContent(dir) {
     var container = createOrGetElement("container");
 
     while (!missedIndex) {
-        try {
-            const data = await loadMarkdown(`${dir}/${counter}.md`).catch(err => missedIndex = true);//.then(md => document.body.innerHTML += `<hr><br>${md}<hr>`);
-            console.log(data)
-            if (!missedIndex) {
-                var d = new Date(data.lastModified);
-                var df = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }) //weekday: 'long',
+        const data = await loadMarkdown(`${dir}/${counter}.md`)
+            .catch(err => missedIndex = true);
 
-                var el = document.createElement("div");
-                el.className = "item";
-                el.innerHTML = `
-                <hr>
-                <div class='metadata'>#<b>${counter}</b> - ${df}</div>
-                <div class='content'>${data.content}</div>
-                `
-                container.prepend(el)
-            }
-            console.log("loaded", counter)
-        } catch {
-
-            missedIndex = true;
-        }
+        if (!missedIndex)
+            createItem(data, counter)
         counter += 1;
     }
     console.log("Finished loading content");
