@@ -1,0 +1,16 @@
+body {
+    font-family: 'Inter';
+    padding: 3vw
+}
+
+h1 {
+    font-weight: 100;
+}
+
+.container {
+
+}
+
+.container h1 {
+    font-size: 1.7em;
+}
