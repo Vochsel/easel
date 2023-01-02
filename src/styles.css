@@ -7,11 +7,11 @@ h1 {
     font-weight: 100;
 }
 
-.container {
+#container {
 
 }
 
-.container h1 {
+#container h1 {
     font-size: 1.7em;
 }
 
@@ -40,7 +40,7 @@ h1 {
 
 /* POSTS */
 
-.container .item .content {
+#container .item .content {
     padding-left: 1vw;
     padding-right: 1vw;
 }

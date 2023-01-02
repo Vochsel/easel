@@ -16,6 +16,19 @@ function addJS(src) {
     document.getElementsByTagName("head")[0].appendChild(script);
 }
 
+function createOrGetElement(id) {
+
+    var element = document.getElementById(id);
+
+    if (!element) {
+        element = document.createElement("div");
+        element.id = id;
+        document.body.appendChild(container);
+    }
+
+    return element;
+}
+
 function loadFile(path) {
     return new Promise((resolve, reject) => {
         fetch(path).then(async data => {
@@ -53,13 +66,7 @@ async function loadEaselJSON(dir) {
 
     if (!metadata) return;
 
-    var profile = document.getElementById("profile");
-
-    if (!profile) {
-        profile = document.createElement("div");
-        profile.id = "profile";
-    }
-
+    var profile = createOrGetElement("profile");
 
     profile.innerHTML = `
     <img class='profilePicture' src='${metadata.profilePicture}' width='75' height='75'/>
@@ -75,8 +82,8 @@ async function loadEaselJSON(dir) {
 async function loadContent(dir) {
     var missedIndex = false;
     var counter = 1;
-    var container = document.createElement("div");
-    container.className = "container"
+    var container = createOrGetElement("container");
+
     while (!missedIndex) {
         try {
             const data = await loadMarkdown(`${dir}/${counter}.md`).catch(err => missedIndex = true);//.then(md => document.body.innerHTML += `<hr><br>${md}<hr>`);
@@ -100,7 +107,6 @@ async function loadContent(dir) {
         }
         counter += 1;
     }
-    document.body.appendChild(container);
     console.log("Finished loading content");
 }
 
