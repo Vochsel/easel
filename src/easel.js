@@ -60,7 +60,7 @@ function loadMarkdown(path) {
 
 addJS("https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js");
 
-addCSS("https://cdn.jsdelivr.net/gh/vochsel/easel/src/src/styles.css");
+addCSS("https://cdn.jsdelivr.net/gh/vochsel/easel/src/styles.css");
 addCSS("https://fonts.googleapis.com", "preconnect");
 addCSS("https://fonts.gstatic.com", "preconnect");
 addCSS("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap");
