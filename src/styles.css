@@ -44,3 +44,11 @@ h1 {
     padding-left: 1vw;
     padding-right: 1vw;
 }
+
+
+#footer {
+    margin: 0 auto;
+    color: #777;
+    font-style: italic;
+    text-align: center;
+}

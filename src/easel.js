@@ -29,6 +29,10 @@ function createOrGetElement(id) {
     return element;
 }
 
+function elementExists(id) {
+    return document.getElementById(id) !== null;
+}
+
 function loadFile(path) {
     return new Promise((resolve, reject) => {
         fetch(path).then(async data => {
@@ -60,6 +64,13 @@ addCSS("/src/styles.css");
 addCSS("https://fonts.googleapis.com", "preconnect");
 addCSS("https://fonts.gstatic.com", "preconnect");
 addCSS("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap");
+
+function appendEaselFooter() {
+    var el = document.createElement("div");
+    el.id = "footer";
+    el.innerHTML = "Created on <a target='_blank' href='https://github.com/Vochsel/easel'>Easel</a>"
+    document.body.appendChild(el)
+}
 
 async function loadEaselJSON(dir) {
     const metadata = await fetch(dir + "easel.json").then(data => data.json()).catch(x => null);
@@ -113,6 +124,10 @@ async function loadContent(dir) {
 function init() {
     loadEaselJSON(location.pathname)
     loadContent(location.pathname + "/content/feed");
+
+    if (!elementExists("footer")) {
+        appendEaselFooter();
+    }
 }
 
 
