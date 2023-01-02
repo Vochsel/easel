@@ -27,12 +27,24 @@ Use markdown for styling, embed whatever you want, it's your site.
 ### Customizing your Profile
 Easel looks for a file called `easel.json` next to `index.html`. There you can add any profile information you want.
 
+```
+{
+    "handle": "",
+    "name": "",
+    "profilePicture": "",
+    "headerPicture": "",
+    "location": "",
+    "description": ""
+}
+```
+
 ## Behind the scenes...
 It's literally just a website....
 
 ### Vague Roadmap
 (No gaurantees, but feel free to join the conversation or contribute!)
 
+* Pagination? Definitely lazy load
 * Add multiple sub routes of content feeds with automatic navigation
 * Improve styling
 * Add minified version
