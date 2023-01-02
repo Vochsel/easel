@@ -23,7 +23,7 @@ function createOrGetElement(id) {
     if (!element) {
         element = document.createElement("div");
         element.id = id;
-        document.body.appendChild(container);
+        document.body.appendChild(element);
     }
 
     return element;
