@@ -97,9 +97,11 @@ body {
     font-weight: 400;
 }
 
+
 .item iframe {
-    width: 100%;
-    height: 30vw;
+    width: 50%;
+    height: 15vw;
     border: none;
     margin: 0 auto;
+    display: block;
 }
