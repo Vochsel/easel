@@ -1,10 +1,10 @@
 function addCSS(href, rel = "stylesheet") {
-
+    console.log(href)
     var link = document.createElement("link");
     link.href = href;
     link.type = "text/css";
     link.rel = rel;
-    link.media = "screen,print";
+    // link.media = "screen,print";
     link.crossOrigin = 'crossorigin';
 
     document.getElementsByTagName("head")[0].appendChild(link);
@@ -33,6 +33,10 @@ function elementExists(id) {
     return document.getElementById(id) !== null;
 }
 
+function isLocalhost() {
+    return (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+}
+
 function loadFile(path) {
     return new Promise((resolve, reject) => {
         fetch(path).then(async data => {
@@ -58,12 +62,21 @@ function loadMarkdown(path) {
     });
 }
 
-addJS("https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js");
+let CDN_PREFIX = "/";
 
-addCSS("https://cdn.jsdelivr.net/gh/vochsel/easel/src/styles.css");
+if (!isLocalhost())
+    CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel/"
+
+// External Deps
+
+addJS("https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js");
 addCSS("https://fonts.googleapis.com", "preconnect");
 addCSS("https://fonts.gstatic.com", "preconnect");
 addCSS("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap");
+
+// Internal Deps
+
+addCSS(CDN_PREFIX + "src/styles.css");
 
 function appendEaselFooter() {
     var el = document.createElement("div");
