@@ -101,7 +101,7 @@ $content_JSON = json_encode($content, JSON_HEX_TAG);
         renderProfileHeader(metadata);
         renderNav();
         // renderItems(items)
-        loadContent(location.pathname + "/content/feed");
+        loadContent(location.pathname + "content/feed");
 
         if (!elementExists("footer")) {
             renderEaselFooter();
