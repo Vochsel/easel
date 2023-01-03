@@ -1,3 +1,5 @@
+console.log("Easel - JS");
+
 function isLocalhost() {
     return (location.hostname === "localhost" || location.hostname === "127.0.0.1")
 }
@@ -30,6 +32,8 @@ if (!isLocalhost()) {
 // External Deps
 
 addJS("https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js");
+addJS("https://cdn.jsdelivr.net/gh/travist/jsencrypt/bin/jsencrypt.min.js");
+
 addCSS("https://fonts.googleapis.com", "preconnect");
 addCSS("https://fonts.gstatic.com", "preconnect");
 addCSS("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap");

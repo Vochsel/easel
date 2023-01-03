@@ -40,6 +40,9 @@ Easel looks for a file called `easel.json` next to `index.html`. There you can a
 }
 ```
 
+### Advanced (PHP)
+We need to bundle the easel.php file alongside index.php (Maybe we can update this in place?)
+
 ## Behind the scenes...
 It's literally just a website....
 

@@ -1,7 +1,8 @@
 <html>
 
 <head>
-    <?php require("../../src/easel.php") ?>
+    <?php require("./easel.php") ?>
+
 </head>
 
 <body>
