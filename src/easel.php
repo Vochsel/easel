@@ -1,6 +1,21 @@
+<?php
+
+function isLocalhost($whitelist = ['127.0.0.1', '::1'])
+{
+    return in_array($_SERVER['REMOTE_ADDR'], $whitelist);
+}
+
+$CDN_PREFIX = "../../";
+
+if (!isLocalhost()) {
+    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@0.0.6/";
+}
+
+?>
+
 <!-- <script src="https://cdn.jsdelivr.net/gh/vochsel/easel/src/easel.js"></script> -->
-<script src="../../src/common.js"></script>
-<link href="../../src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
+<script src="<?php echo $CDN_PREFIX ?>src/common.js"></script>
+<link href="<?php echo $CDN_PREFIX ?>src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
 
 
 <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
