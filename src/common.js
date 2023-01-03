@@ -84,7 +84,7 @@ function checkLogin(private_key) {
 
 function generateKeys() {
     var crypt = new JSEncrypt({ default_key_size: 1024 });
-    const pv = crypt.getPrivateKey();
+    const pv = crypt.getPrivateKey().replaceAll('\n', '');
     const pb = crypt.getPublicKey().replaceAll('\n', '');
 
     console.log(pv)
@@ -106,6 +106,7 @@ function renderTextArea(id) {
 function renderButton(text, onClick) {
     var el = document.createElement('input');
     el.type = "submit";
+    el.name = text;
     el.value = text;
     el.addEventListener('click', onClick);
     return el;
@@ -173,6 +174,13 @@ function renderNav() {
 
     form_el.appendChild(renderButton("Post", () => {
         console.log(post_text_area.value);
+    }));
+
+    
+    form_el.appendChild(renderButton("Sync", () => {
+    }));
+
+    form_el.appendChild(renderButton("Update Easel", () => {
     }));
 
     if (isLoggedIn())
