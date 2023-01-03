@@ -21,7 +21,12 @@ function elementExists(id) {
 
 function loadFile(path) {
     return new Promise((resolve, reject) => {
-        fetch(path).then(async data => {
+        fetch(path, {
+            cache: "no-store",
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        }).then(async data => {
             if (data.ok) {
                 const content = await data.text();
 
@@ -140,7 +145,7 @@ function renderNav() {
             const private_key = prompt("Enter private key (Saved locally)");
 
             try {
-                
+
                 if (checkLogin(private_key)) {
                     storePrivateKey(private_key);
                     location.reload();
@@ -148,7 +153,7 @@ function renderNav() {
                 }
             } catch (error) {
                 alert("Incorrect password");
-                
+
             }
         }));
     } else {
