@@ -17,6 +17,12 @@ if (isset($_POST['new_post'])) {
 
     $directory = "./content/feed";
 
+    // TODO: make this robust
+    if (!file_exists($directory)) {
+        mkdir($directory, 0777, true);
+        file_put_contents($directory . "/manifest.txt", "");
+    }
+
     $filecount = count(glob($directory . "/*"));
 
     post($directory, $filecount . ".md", $_POST['new_post']);
@@ -40,20 +46,16 @@ function isLocalhost($whitelist = ['127.0.0.1', '::1'])
 $CDN_PREFIX = "../../";
 
 if (!isLocalhost()) {
-    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@0.0.6/";
+    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@0.0.11/";
 }
 
 ?>
 
-<!-- <script src="https://cdn.jsdelivr.net/gh/vochsel/easel/src/easel.js"></script> -->
 <script src="<?php echo $CDN_PREFIX ?>src/common.js"></script>
 <link href="<?php echo $CDN_PREFIX ?>src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
 
-
 <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/travist/jsencrypt/bin/jsencrypt.min.js"></script>
-<!-- <script src="https://cdn.jsdelivr.net/gh/wwwtyro/cryptico/cryptico.min.js"></script> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> -->
 <link href="https://fonts.googleapis.com" type="text/css" rel="preconnect" crossorigin="crossorigin">
 <link href="https://fonts.gstatic.com" type="text/css" rel="preconnect" crossorigin="crossorigin">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&amp;display=swap" type="text/css"
@@ -73,31 +75,12 @@ $metadata_JSON = json_encode($metadata);
 
 ?>
 
-<?php
-
-// Dynamically load items...
-$items = array_slice(scandir("./content/feed"), 2);
-
-$content = array();
-
-foreach ($items as $item) {
-    // echo "./content/feed/" . $item;
-    $item_contents = file_get_contents("./content/feed/" . $item);
-    // echo $item_contents;
-    array_push($content, $item_contents);
-}
-
-$content_JSON = json_encode($content, JSON_HEX_TAG);
-
-?>
-
 <script>
     console.log("Easel - PHP");
     const metadata = <?php echo $metadata_JSON; ?>
 
     function init() {
 
-        const items = <?php echo $content_JSON; ?>;
         renderProfileHeader(metadata);
         renderNav();
         // renderItems(items)
@@ -114,3 +97,7 @@ $content_JSON = json_encode($content, JSON_HEX_TAG);
 <title>
     <?php echo $metadata->{'name'} . " - @" . $metadata->{'handle'} ?>
 </title>
+
+<meta property="og:title" content="<?php echo $metadata->{'name'} . " - @" . $metadata->{'handle'} ?>" />
+<meta property="og:image" content="<?php echo $metadata->{'headerPicture'} ?>" />
+<meta property="og:description" content="<?php echo $metadata->{'description'} ?>" />
