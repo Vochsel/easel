@@ -50,7 +50,9 @@ function loadMarkdown(path) {
 }
 
 function loadManifest(path) {
-    return loadFile(path + `/manifest.txt?cache_hack=${Date.now()}`).then(data => data.content.split('\n'));
+    return loadFile(path + `/manifest.txt?cache_hack=${Date.now()}`).then(data => {
+        return data.content.split('\n').filter(n => n)
+    });
 }
 
 async function loadEaselJSON(dir) {
