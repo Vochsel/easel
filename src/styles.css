@@ -12,6 +12,26 @@ body {
     text-align: center;
 }
 
+/* Navigation */
+
+#nav {
+    position: fixed;
+    left: 0;
+    top: 2vw;
+    width: 25%;
+    box-sizing: border-box;
+}
+
+
+#nav input {
+    padding: 1vw;
+    display: block;
+    box-sizing: border-box;
+    width: 50%;
+    margin: 0 auto;
+    margin-bottom: 1vw;
+    /* border-radius: 20px; */
+}
 
 
 /* PROFILE */
@@ -114,4 +134,30 @@ body {
         width: 90%;
         height: 45vw;
     }
+
+    #nav {
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 5vw;
+    }
+
+    #nav input {
+        display: inline;
+        width: auto;
+        font-size: 4vw;
+    }
+
+    #nav textarea {
+        padding: 1vw;
+        display: inline;
+        box-sizing: border-box;
+        font-size: 4vw;
+        width: 50%;
+    }
+    #nav form {
+        display: inline;
+    }
+    
+    
 }
