@@ -22,6 +22,14 @@ body {
     box-sizing: border-box;
 }
 
+#nav textarea {
+    padding: 1vw;
+    display: block;
+    box-sizing: border-box;
+    width: 50%;
+    margin: 0 auto;
+    margin-bottom: 1vw;
+}
 
 #nav input {
     padding: 1vw;
@@ -155,6 +163,7 @@ body {
         font-size: 4vw;
         width: 50%;
     }
+
     #nav form {
         display: inline;
     }
