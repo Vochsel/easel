@@ -99,6 +99,13 @@ function renderTextArea(id) {
     var el = document.createElement('textarea');
     el.id = id;
     el.name = id;
+    el.addEventListener('keydown', (e) => {        
+        if(e.key === "Enter" && e.shiftKey) {
+            console.log("Post shortcut");
+            // Submit shortcut
+            document.getElementById("post").click();
+        }
+    })
     return el;
 }
 
@@ -107,6 +114,7 @@ function renderButton(text, name, onClick) {
     var el = document.createElement('input');
     el.type = "submit";
     el.name = name;
+    el.id = name;
     el.value = text;
     el.addEventListener('click', onClick);
     return el;
@@ -178,7 +186,7 @@ function renderNav() {
     let post_text_area = renderTextArea("new_post");
     form_el.appendChild(post_text_area);
 
-    form_el.appendChild(renderButton("Post", "post", () => {
+    form_el.appendChild(renderButton("Post (Shift + Enter)", "post", () => {
         console.log(post_text_area.value);
     }));
 
