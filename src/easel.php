@@ -1,8 +1,4 @@
 <?php
-$VERSION = "0.0.14";
-?>
-
-<?php
 
 function isLocalhost($whitelist = ['127.0.0.1', '::1'])
 {
@@ -12,7 +8,8 @@ function isLocalhost($whitelist = ['127.0.0.1', '::1'])
 $CDN_PREFIX = "../../";
 
 if (!isLocalhost()) {
-    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@$VERSION/";
+    // Moving to latest to improve testing time
+    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@LATEST/";
 }
 
 ?>
@@ -106,12 +103,21 @@ function edit($dir, $name, $contents)
 
 function update()
 {
+    // It seems not all installations of php can file_get_contents from url...
+    // This does assume that curl binaries are installed, which doesnt seem to be the case on windows
     global $CDN_PREFIX;
+    $url = "$CDN_PREFIX/src/easel.php?cache_hack=" . time();
 
-    $url = "{$CDN_PREFIX}src/easel.php";
+    $curlSession = curl_init();
+    curl_setopt($curlSession, CURLOPT_URL, $url);
+    curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
+    curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
+
+    $remoteContents = curl_exec($curlSession);
+
     $local = "./easel.php";
     // echo $url . " -> " . $local;
-    if (file_put_contents($local, file_get_contents($url))) {
+    if (file_put_contents($local, $remoteContents)) {
         // echo "File downloaded successfully";
     } else {
         // echo "File downloading failed.";
