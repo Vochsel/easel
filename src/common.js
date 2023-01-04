@@ -111,12 +111,28 @@ function renderTextArea(id) {
 
 function renderButton(text, name, onClick) {
     var el = document.createElement('input');
+    el.className = "button";
     el.type = "submit";
     el.name = name;
     el.id = name;
     el.value = text;
     el.addEventListener('click', onClick);
     return el;
+}
+
+function renderFileInput(name, onChange) {
+    var lbl = document.createElement("label");
+    lbl.innerText = "Upload";
+    lbl.className = "button";
+
+    var el = document.createElement('input');
+    el.type = "file";
+    el.name = name;
+    el.id = name;
+    el.addEventListener('change', onChange);
+
+    lbl.appendChild(el);
+    return lbl;
 }
 
 // Components
@@ -175,6 +191,7 @@ function renderNav() {
 
     var form_el = document.createElement("form");
     form_el.method = "POST";
+    form_el.enctype = "multipart/form-data"; // Needed for file uploads
 
     form_el.appendChild(renderButton("Update RSS", "publish_rss", () => {
     }));
@@ -187,6 +204,15 @@ function renderNav() {
 
     form_el.appendChild(renderButton("Post (Shift + Enter)", "post", () => {
         console.log(post_text_area.value);
+    }));
+    form_el.appendChild(renderFileInput("upload_media", () => {
+        // console.log(post_text_area.value);
+        var trigger = document.createElement("input");
+        trigger.type = "text";
+        trigger.value = "true"
+        trigger.name = "has_upload";
+        form_el.appendChild(trigger);
+        form_el.submit();
     }));
 
     if (isLoggedIn())

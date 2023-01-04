@@ -33,7 +33,7 @@ body {
     resize: vertical;
 }
 
-#nav input {
+#nav .button {
     padding: 1vw;
     display: block;
     box-sizing: border-box;
@@ -44,10 +44,16 @@ body {
     border: none;
     cursor: pointer;
     font-size: 1.2em;
-    /* border-radius: 20px; */
+    background-color: buttonface;
+    text-align: center;
+    white-space: pre;
 }
 
-#nav input:hover {
+#nav input[type="file"] {
+    display: none;
+}
+
+#nav .button:hover {
     opacity: 0.5;
 }
 
@@ -116,6 +122,33 @@ body {
     display: block;
 }
 
+.item model-viewer {
+    width: 100%;
+    height: 15vw;
+    border: none;
+    margin: 0 auto;
+    display: block;
+
+}
+
+.item img {
+    width: 50%;
+    height: 15vw;
+    border: none;
+    margin: 0 auto;
+    display: block;
+    object-fit: contain;
+}
+
+
+.item video {
+    width: 50%;
+    height: 15vw;
+    border: none;
+    margin: 0 auto;
+    display: block;
+    object-fit: contain;
+}
 
 
 
@@ -160,7 +193,7 @@ body {
         margin-bottom: 5vw;
     }
 
-    #nav input {
+    #nav .button {
         display: inline;
         width: auto;
         font-size: 4vw;

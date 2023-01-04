@@ -1,6 +1,7 @@
 <?php
 // Can be overided locally
 $VERSION = "latest";
+// phpinfo();
 
 function isLocalhost($whitelist = ['127.0.0.1', '::1'])
 {
@@ -97,10 +98,59 @@ function post($dir, $name, $contents)
     file_put_contents($manifest_path, $name . "\n" . $fileContents);
 }
 
+function post_latest($directory, $contents)
+{
+    $filecount = count(glob($directory . "/*"));
+
+    post($directory, $filecount . ".md", $contents);
+}
+
 function edit($dir, $name, $contents)
 {
     $file_path = $dir . "/" . $name;
     file_put_contents($file_path, $contents);
+}
+
+function upload($dir)
+{
+    // $target_dir = "uploads/";
+    $target_file = $dir . basename($_FILES["upload_media"]["name"]);
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    // echo $imageFileType;
+    // Check if image file is a actual image or fake image
+    // if (isset($_POST["submit"])) {
+    //     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+    //     if ($check !== false) {
+    //         echo "File is an image - " . $check["mime"] . ".";
+    //         $uploadOk = 1;
+    //     } else {
+    //         echo "File is not an image.";
+    //         $uploadOk = 0;
+    //     }
+    // }
+
+    if ($uploadOk == 0) {
+        echo "Sorry, your file was not uploaded.";
+        // if everything is ok, try to upload file
+    } else {
+        if (move_uploaded_file($_FILES["upload_media"]["tmp_name"], $target_file)) {
+            if ($imageFileType == "glb") {
+                post_latest("./content/feed", "<model-viewer
+                    alt='Neil Armstrong's Spacesuit from the Smithsonian Digitization Programs Office and National Air and Space Museum'
+                    src='$target_file' ar shadow-intensity='1' camera-controls
+                    touch-action='pan-y'></model-viewer>
+                ");
+            } else if (in_array($imageFileType, array("png", "jpg", "webp", "svg", "jpeg", "bmp"))) {
+                post_latest("./content/feed", "<img src='$target_file' width='100%' height='100%'/>");
+            } else if ($imageFileType == "mp4") {
+                post_latest("./content/feed", "<video src='$target_file' width='100%' height='100%' muted autoplay playsInline controls/>");
+            }
+            //   echo "The file ". htmlspecialchars( basename( $_FILES["upload_media"]["name"])). " has been uploaded.";
+        } else {
+            //   echo "Sorry, there was an error uploading your file.";
+        }
+    }
 }
 
 function update()
@@ -131,15 +181,22 @@ function update()
     }
 
 }
+// print_r($_FILES);
+
+// print_r($_FILES);
 
 // Sync and create rss.xml file
 if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
     rss("./content/feed");
 }
-// print_r($_POST);
 if (isset($_POST['update_easel']) && $_POST['update_easel'] != null) {
     update();
 }
+if (isset($_POST['has_upload']) && $_POST['has_upload'] != null) {
+    upload("uploads/");
+}
+
+
 // TODO: Fix global
 $directory = "./content/feed";
 
@@ -151,9 +208,7 @@ if (isset($_POST['new_post']) && $_POST['new_post'] != null) {
         file_put_contents($directory . "/manifest.txt", "");
     }
 
-    $filecount = count(glob($directory . "/*"));
-
-    post($directory, $filecount . ".md", $_POST['new_post']);
+    post_latest($directory, $_POST['new_post']);
     $_POST = array();
     unset($_POST['new_post']);
 }
@@ -169,6 +224,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
 <script src="<?php echo $CDN_PREFIX ?>src/common.js"></script>
 <link href="<?php echo $CDN_PREFIX ?>src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
 
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/travist/jsencrypt/bin/jsencrypt.min.js"></script>
 <link href="https://fonts.googleapis.com" type="text/css" rel="preconnect" crossorigin="crossorigin">
