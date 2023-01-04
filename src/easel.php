@@ -9,7 +9,7 @@ $CDN_PREFIX = "../../";
 
 if (!isLocalhost()) {
     // Moving to latest to improve testing time
-    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@LATEST/";
+    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@latest/";
 }
 
 ?>
