@@ -59,6 +59,8 @@ function rss($dir)
         $file_path = $dir . "/" . $line;
         $file_path = str_replace(array("\r", "\n", ' '), '', $file_path);
         $name = explode(".", $line)[0];
+        $author = $metadata->{'handle'};
+        $lastModified = date("F d Y H:i:s.", filemtime($file_path));
         // echo "|" . $file_path . "|";
         // echo $dir . "/" . $line . "\n";
         $fileContents = file_get_contents($file_path, true);
@@ -69,7 +71,11 @@ function rss($dir)
         fwrite($rss_file, "<item>");
         fwrite($rss_file, "<title>" . $name . "</title>");
         fwrite($rss_file, "<link>http://www.vochsel.com/blog</link>");
-        fwrite($rss_file, "<description>" . $fileContents . "</description>");
+        
+
+        fwrite($rss_file, "<author>$author</author>");
+        fwrite($rss_file, "<description>$fileContents</description>");
+        fwrite($rss_file, "<pubDate>$lastModified</pubDate>");
         fwrite($rss_file, "</item>");
 
     }
@@ -106,14 +112,13 @@ function update()
         // echo "File downloading failed.";
     }
 }
-// echo is_null($_POST['new_post']) ? "true" : 'false';
 
-if (isset($_POST['Sync']) && $_POST['Sync'] != null) {
+// Sync and create rss.xml file
+if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
     rss("./content/feed");
-    // echo "Sync";
 }
 // print_r($_POST);
-if (isset($_POST['Update_Easel']) && $_POST['Update_Easel'] != null) {
+if (isset($_POST['update_easel']) && $_POST['update_easel'] != null) {
     update();
 }
 

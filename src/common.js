@@ -103,10 +103,10 @@ function renderTextArea(id) {
 }
 
 
-function renderButton(text, onClick) {
+function renderButton(text, name, onClick) {
     var el = document.createElement('input');
     el.type = "submit";
-    el.name = text;
+    el.name = name;
     el.value = text;
     el.addEventListener('click', onClick);
     return el;
@@ -144,7 +144,7 @@ function renderNav() {
     nav_el.id = "nav";
 
     if (!isLoggedIn()) {
-        nav_el.appendChild(renderButton("Login", () => {
+        nav_el.appendChild(renderButton("Login", "login", () => {
             const private_key = prompt("Enter private key (Saved locally)");
 
             try {
@@ -160,7 +160,7 @@ function renderNav() {
             }
         }));
     } else {
-        nav_el.appendChild(renderButton("Logout", () => {
+        nav_el.appendChild(renderButton("Logout", "logout", () => {
             localStorage.clear();
             location.reload();
         }));
@@ -169,23 +169,21 @@ function renderNav() {
     var form_el = document.createElement("form");
     form_el.method = "POST";
 
+    form_el.appendChild(renderButton("Update RSS", "publish_rss", () => {
+    }));
+
+    form_el.appendChild(renderButton("Update easel.php", "update_easel", () => {
+    }));
+
     let post_text_area = renderTextArea("new_post");
     form_el.appendChild(post_text_area);
 
-    form_el.appendChild(renderButton("Post", () => {
+    form_el.appendChild(renderButton("Post", "post", () => {
         console.log(post_text_area.value);
-    }));
-
-    
-    form_el.appendChild(renderButton("Sync", () => {
-    }));
-
-    form_el.appendChild(renderButton("Update Easel", () => {
     }));
 
     if (isLoggedIn())
         nav_el.appendChild(form_el);
-
 
     document.body.prepend(nav_el);
     return nav_el;
