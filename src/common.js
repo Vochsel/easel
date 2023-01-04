@@ -17,6 +17,12 @@ function elementExists(id) {
     return document.getElementById(id) !== null;
 }
 
+// TODO: Create this converter only once?
+function markdownToHTML(markdown) {
+    var converter = new showdown.Converter();
+    return converter.makeHtml(markdown);
+}
+
 // Loaders
 
 function loadFile(path) {
@@ -40,13 +46,6 @@ function loadFile(path) {
         })
 
     })
-}
-
-function loadMarkdown(path) {
-    var converter = new showdown.Converter();
-    return loadFile(path).then(data => {
-        return { ...data, content: converter.makeHtml(data.content) }
-    });
 }
 
 function loadManifest(path) {
@@ -99,8 +98,8 @@ function renderTextArea(id) {
     var el = document.createElement('textarea');
     el.id = id;
     el.name = id;
-    el.addEventListener('keydown', (e) => {        
-        if(e.key === "Enter" && e.shiftKey) {
+    el.addEventListener('keydown', (e) => {
+        if (e.key === "Enter" && e.shiftKey) {
             console.log("Post shortcut");
             // Submit shortcut
             document.getElementById("post").click();
@@ -199,26 +198,83 @@ function renderNav() {
 
 // Content
 
-function renderItem(data, counter, container) {
+function renderItem(data, counter, opts = {}) {
     // console.log(data)
     var d = new Date(data.lastModified);
     var df = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }) //weekday: 'long',
 
+    // Item buttons
+    var editButton = document.createElement("input");
+    editButton.type = "button";
+    editButton.value = "Edit";
+
+
+    // -- Content metadata
+    var metadataContainer = document.createElement("div");
+    metadataContainer.className = "metadata";
+    metadataContainer.innerHTML = `#<b>${counter}</b> - ${df} `;
+    metadataContainer.append(editButton)
+
+
+    // -- Content rendering
+    var contentContainer = document.createElement("div");
+    contentContainer.className = "content";
+
+    var convertedContent = markdownToHTML(data.content);
+
+    var contentView = document.createElement("div");
+    contentView.innerHTML = convertedContent;
+
+    var contentEdit = renderTextArea(`edit-${counter}`);
+    contentEdit.value = data.content;
+    contentEdit.style.width = "100%";
+    contentEdit.style.height = 100;
+
+    let isEditing = false;
+    contentContainer.append(contentView);
+
+    editButton.addEventListener("click", () => {
+        // alert("CKICk")
+
+        isEditing = !isEditing;
+        console.log(isEditing);
+        contentContainer.innerHTML = "";
+        if (isEditing) {
+            contentContainer.append(contentEdit);
+            editButton.value = "Save";
+        } else {
+            // Save changes
+            // We dynamically create a form here because _POST is taken on the same page...
+            // so can't POST elsewhere, have to trigger a refresh on page...
+            // Not my finest work, but its in the name of minimal footprint
+            contentContainer.append(contentView);
+            editButton.value = "Edit";
+
+            var form = document.createElement("form");
+            form.method = "POST";
+            contentEdit.name = "edit_post";
+            form.appendChild(contentEdit);
+
+            var edit_name = document.createElement("input");
+            edit_name.type = "text";
+            edit_name.name = "source";
+            edit_name.value = opts['source'];
+            form.appendChild(edit_name);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        console.log(contentContainer)
+    })
+
     var el = document.createElement("div");
     el.className = "item";
-    el.innerHTML = `
-            <hr>
-            <div class='metadata'>#<b>${counter}</b> - ${df}</div>
-            <div class='content'>${data.content}</div>
-            `
+    el.innerHTML = `<hr>`
+    el.append(metadataContainer);
+    el.append(contentContainer);
     return el;
 
-}
-
-function renderItems(items) {
-    for (let i = 0; i < items.length; i++) {
-        renderItem(items[i], i);
-    }
 }
 
 /* == Feed Loaders == */
@@ -229,11 +285,13 @@ async function loadContentDynamically(dir) {
     var counter = 1;
 
     while (!missedIndex) {
-        const data = await loadMarkdown(`${dir}/${counter}.md`)
+        const data = await loadFile(`${dir}/${counter}.md`)
             .catch(err => missedIndex = true);
 
         if (!missedIndex) {
-            var el = renderItem(data, counter, container)
+            var el = renderItem(data, counter, {
+                source: `${counter}.md`
+            })
             container.prepend(el);
         }
         counter += 1;
@@ -249,14 +307,17 @@ async function loadContentFromManifest(dir) {
     // for(let i = files.length - 1; i >= 0; --i) {
     for (let i = 0; i < files.length; i++) {
         const item_name = files[i].split('.')[0];
-        const data = await loadMarkdown(`${dir}/${files[i]}`)
-        const el = renderItem(data, item_name)
+        const data = await loadFile(`${dir}/${files[i]}`)
+        const el = renderItem(data, item_name, {
+            source: files[i]
+        })
         container.append(el);
     }
 }
 
 async function loadContent(dir) {
     loadContentFromManifest(dir).catch(x => {
+        console.log(x);
         console.log("No manifest.txt found, doing sequential lookup")
         // No manifest found
         loadContentDynamically(dir);

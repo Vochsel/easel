@@ -98,6 +98,12 @@ function post($dir, $name, $contents)
     file_put_contents($manifest_path, $name . "\n" . $fileContents);
 }
 
+function edit($dir, $name, $contents)
+{
+    $file_path = $dir . "/" . $name;
+    file_put_contents($file_path, $contents);
+}
+
 function update()
 {
     global $CDN_PREFIX;
@@ -120,9 +126,10 @@ if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
 if (isset($_POST['update_easel']) && $_POST['update_easel'] != null) {
     update();
 }
+// TODO: Fix global
+$directory = "./content/feed";
 
 if (isset($_POST['new_post']) && $_POST['new_post'] != null) {
-    $directory = "./content/feed";
 
     // TODO: make this robust
     if (!file_exists($directory)) {
@@ -135,6 +142,12 @@ if (isset($_POST['new_post']) && $_POST['new_post'] != null) {
     post($directory, $filecount . ".md", $_POST['new_post']);
     $_POST = array();
     unset($_POST['new_post']);
+}
+
+if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
+    $new_content = $_POST['edit_post'];
+    $source_name = $_POST['source'];
+    edit($directory, $source_name, $new_content);
 }
 ?>
 
@@ -157,7 +170,6 @@ if (isset($_POST['new_post']) && $_POST['new_post'] != null) {
 
             renderProfileHeader(metadata);
             renderNav();
-            // renderItems(items)
             loadContent(location.pathname + "content/feed");
 
             if (!elementExists("footer")) {
