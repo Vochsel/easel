@@ -213,7 +213,8 @@ function renderItem(data, counter, opts = {}) {
     var metadataContainer = document.createElement("div");
     metadataContainer.className = "metadata";
     metadataContainer.innerHTML = `#<b>${counter}</b> - ${df} `;
-    metadataContainer.append(editButton)
+    if(isLoggedIn())
+        metadataContainer.append(editButton)
 
 
     // -- Content rendering
