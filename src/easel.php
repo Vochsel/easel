@@ -1,5 +1,5 @@
 <?php
-$VERSION = "0.0.13";
+$VERSION = "0.0.14";
 ?>
 
 <?php
@@ -71,7 +71,6 @@ function rss($dir)
         fwrite($rss_file, "<item>");
         fwrite($rss_file, "<title>" . $name . "</title>");
         fwrite($rss_file, "<link>http://www.vochsel.com/blog</link>");
-        
 
         fwrite($rss_file, "<author>$author</author>");
         fwrite($rss_file, "<description>$fileContents</description>");
