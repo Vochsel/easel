@@ -1,4 +1,6 @@
 <?php
+// Can be overided locally
+$VERSION = "latest";
 
 function isLocalhost($whitelist = ['127.0.0.1', '::1'])
 {
@@ -9,7 +11,7 @@ $CDN_PREFIX = "../../";
 
 if (!isLocalhost()) {
     // Moving to latest to improve testing time
-    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@latest/";
+    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@$VERSION/";
 }
 
 ?>
@@ -105,23 +107,29 @@ function update()
 {
     // It seems not all installations of php can file_get_contents from url...
     // This does assume that curl binaries are installed, which doesnt seem to be the case on windows
-    global $CDN_PREFIX;
-    $url = "$CDN_PREFIX/src/easel.php?cache_hack=" . time();
+    // global $CDN_PREFIX;
+    $url = "https://cdn.jsdelivr.net/gh/vochsel/easel/src/easel.php";
 
-    $curlSession = curl_init();
-    curl_setopt($curlSession, CURLOPT_URL, $url);
-    curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
-    curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
+    // $curlSession = curl_init();
+    // curl_setopt($curlSession, CURLOPT_URL, $url);
+    // curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
+    // curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
+    // curl_setopt($curlSession, CURLOPT_FOLLOWLOCATION, true);
 
-    $remoteContents = curl_exec($curlSession);
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+    $remoteContents = curl_exec($curl);
+    // echo $remoteContents;
 
     $local = "./easel.php";
     // echo $url . " -> " . $local;
-    if (file_put_contents($local, $remoteContents)) {
+    if (file_put_contents($local, $remoteContents, LOCK_EX)) {
         // echo "File downloaded successfully";
     } else {
         // echo "File downloading failed.";
     }
+
 }
 
 // Sync and create rss.xml file
@@ -158,7 +166,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
 ?>
 
 
-<script src="<?php echo $CDN_PREFIX ?>src/common.js"></script>
+<script src="<?php echo $CDN_PREFIX . "src/common.js?cache_hack=" . time() ?>"></script>
 <link href="<?php echo $CDN_PREFIX ?>src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
 
 <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
