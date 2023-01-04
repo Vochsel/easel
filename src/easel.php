@@ -113,37 +113,31 @@ function edit($dir, $name, $contents)
 
 function upload($dir)
 {
+    // TODO: make this robust
+    if (!file_exists($dir)) {
+        mkdir($dir, 0777, true);
+    }
+
     // $target_dir = "uploads/";
     $target_file = $dir . basename($_FILES["upload_media"]["name"]);
     $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-    // echo $imageFileType;
-    // Check if image file is a actual image or fake image
-    // if (isset($_POST["submit"])) {
-    //     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-    //     if ($check !== false) {
-    //         echo "File is an image - " . $check["mime"] . ".";
-    //         $uploadOk = 1;
-    //     } else {
-    //         echo "File is not an image.";
-    //         $uploadOk = 0;
-    //     }
-    // }
+    $target_file_extension = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
     if ($uploadOk == 0) {
         echo "Sorry, your file was not uploaded.";
         // if everything is ok, try to upload file
     } else {
         if (move_uploaded_file($_FILES["upload_media"]["tmp_name"], $target_file)) {
-            if ($imageFileType == "glb") {
+            if ($target_file_extension == "glb") {
                 post_latest("./content/feed", "<model-viewer
-                    alt='Neil Armstrong's Spacesuit from the Smithsonian Digitization Programs Office and National Air and Space Museum'
                     src='$target_file' ar shadow-intensity='1' camera-controls
                     touch-action='pan-y'></model-viewer>
                 ");
-            } else if (in_array($imageFileType, array("png", "jpg", "webp", "svg", "jpeg", "bmp"))) {
+            } else if (in_array($target_file_extension, array("png", "jpg", "webp", "svg", "jpeg", "bmp"))) {
                 post_latest("./content/feed", "<img src='$target_file' width='100%' height='100%'/>");
-            } else if ($imageFileType == "mp4") {
+            } else if (in_array($target_file_extension, array("wav", "mp3", "ogg"))) {
+                post_latest("./content/feed", "<audio src='$target_file' width='100%' height='100%' controls/>");
+            } else if ($target_file_extension == "mp4") {
                 post_latest("./content/feed", "<video src='$target_file' width='100%' height='100%' muted autoplay playsInline controls/>");
             }
             //   echo "The file ". htmlspecialchars( basename( $_FILES["upload_media"]["name"])). " has been uploaded.";

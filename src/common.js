@@ -211,6 +211,7 @@ function renderNav() {
         trigger.type = "text";
         trigger.value = "true"
         trigger.name = "has_upload";
+        trigger.style.display = "none";
         form_el.appendChild(trigger);
         form_el.submit();
     }));
