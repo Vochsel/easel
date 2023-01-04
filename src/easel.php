@@ -166,7 +166,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
 ?>
 
 
-<script src="<?php echo $CDN_PREFIX . "src/common.js?cache_hack=" . time() ?>"></script>
+<script src="<?php echo $CDN_PREFIX ?>src/common.js"></script>
 <link href="<?php echo $CDN_PREFIX ?>src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
 
 <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
