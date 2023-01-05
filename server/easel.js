@@ -40,7 +40,7 @@ addCSS("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=
 
 // Internal Deps
 
-addJS(CDN_PREFIX + "src/common.js");
+addJS(CDN_PREFIX + "dist/bundle.js");
 addCSS(CDN_PREFIX + "src/styles.css");
 
 // -- JS Frontend

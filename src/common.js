@@ -137,29 +137,6 @@ function renderFileInput(name, onChange) {
 
 // Components
 
-function renderEaselFooter() {
-    var el = document.createElement("div");
-    el.id = "footer";
-    el.innerHTML = "Created on <a target='_blank' href='https://github.com/Vochsel/easel'>Easel</a>"
-    document.body.appendChild(el)
-}
-
-function renderProfileHeader(metadata) {
-
-    var profile = createOrGetElement("profile");
-
-    profile.innerHTML = `
-    <div id='profileHeader'>
-        <img id='headerProfile' class='profilePicture' src='${metadata.profilePicture}' width='75' height='75'/>
-        <img id='headerPicture' src='${metadata.headerPicture}' />
-    </div>
-    <span id='name'>${metadata.name}</span>
-    <span id='handle'>@${metadata.handle}</span>
-    <div id='description'>${metadata.description}</div>
-    `
-
-    document.body.prepend(profile);
-}
 
 function renderNav() {
     var nav_el = document.createElement("div");

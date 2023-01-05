@@ -215,7 +215,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
 ?>
 
 
-<script src="<?php echo $CDN_PREFIX ?>src/common.js"></script>
+<script src="<?php echo $CDN_PREFIX ?>dist/bundle.js"></script>
 <link href="<?php echo $CDN_PREFIX ?>src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
 
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -229,6 +229,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
 <script>
     console.log("Easel - PHP");
     const metadata = <?php echo $metadata_JSON; ?>
+    window.setupPage(metadata)
 
         function init() {
 
@@ -241,7 +242,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
             }
         }
 
-    window.addEventListener('load', init);
+    // window.addEventListener('load', init);
 </script>
 
 <title>
