@@ -8,9 +8,11 @@ function loadFile(path) {
         }).then(async data => {
             if (data.ok) {
                 const content = await data.text();
+                let lastModified = data.headers.get('Last-Modified');
+                if(!lastModified) lastModified = "1966-11-06";
 
                 resolve({
-                    lastModified: data.headers.get('Last-Modified'),
+                    lastModified,
                     content: content
                 });
             }

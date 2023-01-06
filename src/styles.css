@@ -1,3 +1,6 @@
+html {
+    width: 100vw;
+}
 body {
     font-family: 'Inter';
     width: 50%;
@@ -15,7 +18,7 @@ body {
 
 #nav {
     position: fixed;
-    left: 0;
+    left: 2vw;
     top: 2vw;
     width: 25%;
     box-sizing: border-box;
@@ -34,7 +37,6 @@ body {
 }
 
 #nav .button {
-    padding: 1vw;
     display: block;
     box-sizing: border-box;
     width: 50%;
@@ -47,6 +49,44 @@ body {
     background-color: buttonface;
     text-align: center;
     white-space: pre;
+    background-color: #777;
+    color: white;
+}
+
+.icon-button {
+    cursor: pointer;
+}
+
+.button {
+    /* width: 120px; */
+    padding-left: 30px;
+    padding-right: 30px;
+    height: 40px;
+    border-radius: 20px;
+    border: none;
+    background-color: #777;
+    color: white;
+    font-size: 15px;
+    font-family: 'Inter';
+    cursor: pointer;
+    transition: background-color 0.1s;
+    /* font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; */
+}
+
+.text_area {
+    font-family: 'Inter';
+    font-size: 1em;
+    padding: 12px;
+    border: solid thin #bbb;
+}
+
+.button:hover {
+    background-color: #999;;
+}
+
+.button:active {
+    transition: background-color 0.0s;
+    background-color: #555;;
 }
 
 #nav input[type="file"] {
@@ -210,6 +250,4 @@ body {
     #nav form {
         display: inline;
     }
-
-
 }

@@ -2,8 +2,14 @@ const Button = (props) => {
     return <input type='submit' className="button" {...props} />
 }
 
+const IconButton = (props) => {
+    return <div className="icon-button" onClick={props.onClick} style={props.style}>
+        {props.children}
+    </div>
+}
+
 const TextEdit = (props) => {
-    return <textarea {...props} className="text_edit"></textarea>
+    return <textarea className="text_edit" {...props}></textarea>
 }
 
 const FileUpload = (props) => {
@@ -13,4 +19,8 @@ const FileUpload = (props) => {
     </label>;
 }
 
-export { Button, TextEdit, FileUpload };
+const FileUploadInvisible = (props) => {
+    return <input type="file" {...props} style={{display: 'none'}}/>;
+}
+
+export { Button, TextEdit, FileUpload, IconButton, FileUploadInvisible };

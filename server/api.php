@@ -136,9 +136,9 @@ function upload($dir)
             } else if ($target_file_extension == "mp4") {
                 post_latest("./content/feed", "<video src='$target_file' width='100%' height='100%' muted autoplay playsInline controls/>");
             }
-            //   echo "The file ". htmlspecialchars( basename( $_FILES["upload_media"]["name"])). " has been uploaded.";
+              echo "The file ". htmlspecialchars( basename( $_FILES["upload_media"]["name"])). " has been uploaded.";
         } else {
-            //   echo "Sorry, there was an error uploading your file.";
+              echo "Sorry, there was an error uploading your file.";
         }
     }
 }

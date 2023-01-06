@@ -2,32 +2,27 @@ import { createResource, createSignal, For, Suspense } from "solid-js";
 import { loadItem, loadManifest } from "../loaders";
 import { Converter } from "showdown";
 import { useEaselAuth } from "../context/auth";
-import { TextEdit } from "../components/input";
+import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components/input";
+import { postItem, uploadItem } from "../feature/blog";
+import 'boxicons';
 
 const ItemMetadata = (props) => {
-    var d = new Date(props.item()?.data?.lastModified);
-    var df = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }) //weekday: 'long',
-
     const [isLoggedIn] = useEaselAuth();
 
-    const editButton = <input type='button' value={props.isEditing() ? "Save" : "Edit"} onClick={() => {
+    const editButton = <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
         props.setIsEditing(!props.isEditing());
         if (!props.isEditing()) {
-
-            let formData = new FormData();
-            formData.append('edit_post', props.content());
-            formData.append('source', props.item()?.source);
-
-            fetch("api.php", {
-                method: 'POST',
-                body: formData
-            }).then(x => x.text()).then(x => console.log(x));
+            editItem(props.content(), props.item()?.source);
         }
-    }
-    } />;
+    }}>
+        {props.isEditing() ?
+            <box-icon type='solid' name='save' size='sm' color="#777" /> :
+            <box-icon type='solid' name='edit' size='sm' color="#777" />
+        }
+    </IconButton>;
 
     return <div className="metadata">
-        #<b>{props.item()?.item_name}</b> - {df} {isLoggedIn() && editButton}
+        #<b>{props.item()?.item_name}</b> - {new Date(props.item()?.data?.lastModified).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })} {isLoggedIn() && editButton}
     </div>;
 }
 
@@ -65,10 +60,52 @@ const Item = (props) => {
     </div>;
 }
 
+const NewItem = (props) => {
+    let textRef, uploadRef;
+
+    return <div className="item" style={{ "text-align": 'right' }}>
+        <hr />
+        <TextEdit ref={textRef} className="text_area" style={{
+            width: '100%',
+            height: '100px',
+            resize: 'none'
+        }} placeholder="What's on your mind?" />
+
+        <div style={{
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'right',
+            gap: '10px',
+        }}>
+            <IconButton onClick={() => {
+                uploadRef.click();
+            }}>
+                <box-icon name='image-add' size='40px' color="#777" />
+                <FileUploadInvisible ref={uploadRef} onChange={() => {
+                    // TODO: Make the feed refresh without a reload
+                    uploadItem(uploadRef.files[0]).then(() => location.reload())
+                }} />
+            </IconButton>
+
+            <Button style={{
+                "margin-bottom": '5px',
+                "margin-top": '10px',
+            }} value="Post" onClick={() => {
+                // TODO: Make the feed refresh without a reload
+                postItem(textRef.value).then(() => location.reload())
+
+            }} />
+        </div>
+    </div>;
+}
+
 const FeedItems = () => {
     const [files] = createResource(location.pathname + "content/feed", loadManifest);
 
+    const [isLoggedIn] = useEaselAuth();
+
     return <div>
+        {isLoggedIn() && <NewItem />}
         <For each={files()}>
             {(file, i) => <Suspense fallback={<p>Loading</p>}>
                 <Item source={file} />
