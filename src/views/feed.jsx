@@ -2,7 +2,9 @@ import { createResource, createSignal, For, Suspense } from "solid-js";
 import { loadItem, loadManifest } from "../loaders";
 import { Converter } from "showdown";
 import { useEaselAuth } from "../context/auth";
-import { TextEdit } from "../components/input";
+import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components/input";
+import { postItem } from "../feature/blog";
+import 'boxicons';
 
 const ItemMetadata = (props) => {
     var d = new Date(props.item()?.data?.lastModified);
@@ -22,7 +24,7 @@ const ItemContent = (props) => {
 
     return <div className="content">
         {
-            props.isEditing() ? <TextEdit value={props.item()?.data.content} style={{width:'100%',height:'100px'}}/> : <div innerHTML={converter.makeHtml(props.item()?.data.content)}>
+            props.isEditing() ? <TextEdit value={props.item()?.data.content} style={{ width: '100%', height: '100px' }} /> : <div innerHTML={converter.makeHtml(props.item()?.data.content)}>
             </div>
         }
     </div>;
@@ -46,10 +48,47 @@ const Item = (props) => {
     </div>;
 }
 
+const NewItem = (props) => {
+    let textRef, uploadRef;
+
+    return <div className="item" style={{ "text-align": 'right' }}>
+        <hr />
+        <TextEdit ref={textRef} className="text_area" style={{
+            width: '100%',
+            height: '100px',
+            resize: 'none'
+        }} placeholder="What's on your mind?" />
+
+        <div style={{
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'right',
+            gap: '10px',
+        }}>
+            <IconButton onClick={() => {
+                uploadRef.click();
+            }}>
+                <box-icon name='image-add' size='lg' color="#777" />
+                <FileUploadInvisible ref={uploadRef}/>
+            </IconButton>
+            <Button style={{
+                "margin-bottom": '5px',
+                "margin-top": '10px',
+
+            }} value="Post" onClick={() => {
+                postItem(textRef.value);
+            }} />
+        </div>
+    </div>;
+}
+
 const FeedItems = () => {
     const [files] = createResource(location.pathname + "content/feed", loadManifest);
 
+    const [isLoggedIn] = useEaselAuth();
+
     return <div>
+        {isLoggedIn() && <NewItem />}
         <For each={files()}>
             {(file, i) => <Suspense fallback={<p>Loading</p>}>
                 <Item source={file} />

@@ -32,6 +32,7 @@ module.exports = {
             {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
+                include: path.join(__dirname, 'src'),
             },
             {
                 test: /\.(js)x?$/,

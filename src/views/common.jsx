@@ -1,10 +1,12 @@
 import { checkLogin, storePrivateKey } from "../auth";
-import { Button, FileUpload, TextEdit } from "../components/input";
+import { Button, FileUpload, IconButton, TextEdit } from "../components/input";
 import { useEaselAuth } from "../context/auth";
 
 import hotkeys from 'hotkeys-js';
 
 const Header = ({ metadata }) => {
+    const [isLoggedIn] = useEaselAuth();
+
     return <div id='profile'>
         <div id='profileHeader'>
             <img
@@ -19,9 +21,18 @@ const Header = ({ metadata }) => {
                 src={metadata.headerPicture}
             />
         </div>
-        <span id='name'>{metadata.name}</span>
-        <span id='handle'>@{metadata.handle}</span>
-        <div id='description' innerHTML={metadata.description}></div>
+        <div style={{ display: 'flex' }}>
+            <div style={{ 'flex-grow': 1 }}>
+                <span id='name'>{metadata.name}</span>
+                <span id='handle'>@{metadata.handle}</span>
+                <div id='description' innerHTML={metadata.description}></div>
+            </div>
+            <div>
+                {!isLoggedIn() && <Button value="Follow" name="follow" onClick={() => {
+                    alert(`Followed!`)
+                }}/>}
+            </div>
+        </div>
         <Nav />
     </div>;
 }
@@ -45,31 +56,21 @@ const UserMenu = () => {
     })
 
     return <>
-        <Button value="Logout" name="logout" type="button" onClick={() => {
+        <IconButton onClick={() => {
             localStorage.clear();
             location.reload();
-        }} />
-        <Button name="publish_rss" value="Update RSS" />
-        <Button name="update_easel" value="Update easel.php" />
-        <TextEdit name="new_post" />
-        <Button ref={post_btn} name="post" value="Post (Shift + Enter)" />
-        <FileUpload ref={upload_btn} name="upload_media" onChange={() => {
-            let form_el = upload_btn.parentElement.parentElement;
-            var trigger = document.createElement("input");
-            trigger.type = "text";
-            trigger.value = "true"
-            trigger.name = "has_upload";
-            trigger.style.display = "none";
-            form_el.appendChild(trigger);
-            form_el.submit();
-        }} />
+        }}>
+            <box-icon type='solid' name='user' size="md" color="#bbb"></box-icon>
+        </IconButton>
+
+        {/* <Button name="publish_rss" value="Update RSS" />
+        <Button name="update_easel" value="Update easel.php" /> */}
     </>;
 }
 
 const AnonymousMenu = () => {
     return <>
-        <Button value="Follow" name="follow" />
-        <Button value="Login" name="login" onClick={() => {
+        <IconButton onClick={() => {
             const private_key = prompt("Enter private key (Saved locally)");
             try {
                 if (checkLogin(private_key)) {
@@ -81,7 +82,9 @@ const AnonymousMenu = () => {
                 alert("Incorrect password");
 
             }
-        }} />
+        }}>
+            <box-icon name='user' size="md" color="#bbb"></box-icon>
+        </IconButton>
     </>;
 }
 
