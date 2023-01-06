@@ -1,21 +1,4 @@
-<?php
-// Can be overided locally
-$VERSION = "latest";
-// phpinfo();
 
-function isLocalhost($whitelist = ['127.0.0.1', '::1'])
-{
-    return in_array($_SERVER['REMOTE_ADDR'], $whitelist);
-}
-
-$CDN_PREFIX = "../../";
-
-if (!isLocalhost()) {
-    // Moving to latest to improve testing time
-    $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@$VERSION/";
-}
-
-?>
 
 <?php
 

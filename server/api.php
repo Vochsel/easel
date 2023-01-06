@@ -21,7 +21,16 @@ if (!isLocalhost()) {
 
 function rss($dir)
 {
-    global $metadata;
+    // Open profile manifest
+    $easel_metadata_file = fopen("./easel.json", 'r');
+
+    $filesize = filesize("./easel.json");
+    $easel_metadata_text = fread($easel_metadata_file, $filesize);
+    fclose($easel_metadata_file);
+
+    $metadata = json_decode($easel_metadata_text);
+    $metadata_JSON = json_encode($metadata);
+
     // echo "RSS";
     $rss_file = fopen("./rss.xml", 'w');
 
@@ -68,6 +77,7 @@ function rss($dir)
     fwrite($rss_file, "</rss>");
 
     fclose($rss_file);
+    echo "Updated RSS";
 }
 
 function post($dir, $name, $contents)
@@ -94,6 +104,7 @@ function edit($dir, $name, $contents)
 {
     $file_path = $dir . "/" . $name;
     file_put_contents($file_path, $contents);
+    echo "Saved edit";
 }
 
 function upload($dir)
@@ -159,6 +170,7 @@ function update()
         // echo "File downloading failed.";
     }
 
+    echo "Updated PHP";
 }
 // print_r($_FILES);
 
@@ -198,4 +210,3 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
     edit($directory, $source_name, $new_content);
 }
 ?>
-
