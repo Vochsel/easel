@@ -2,6 +2,8 @@ import { checkLogin, storePrivateKey } from "../auth";
 import { Button, FileUpload, TextEdit } from "../components/input";
 import { useEaselAuth } from "../context/auth";
 
+import hotkeys from 'hotkeys-js';
+
 const Header = ({ metadata }) => {
     return <div id='profile'>
         <div id='profileHeader'>
@@ -31,7 +33,16 @@ const Footer = () => {
 }
 
 const UserMenu = () => {
-    let upload_btn;
+    let upload_btn, post_btn;
+
+    hotkeys.filter = function (event) {
+        return true;
+    }
+
+    hotkeys('shift+enter', 'all', (e) => {
+        e.preventDefault();
+        post_btn.click();
+    })
 
     return <>
         <Button value="Logout" name="logout" type="button" onClick={() => {
@@ -41,7 +52,7 @@ const UserMenu = () => {
         <Button name="publish_rss" value="Update RSS" />
         <Button name="update_easel" value="Update easel.php" />
         <TextEdit name="new_post" />
-        <Button name="post" value="Post (Shift + Enter)" />
+        <Button ref={post_btn} name="post" value="Post (Shift + Enter)" />
         <FileUpload ref={upload_btn} name="upload_media" onChange={() => {
             let form_el = upload_btn.parentElement.parentElement;
             var trigger = document.createElement("input");
