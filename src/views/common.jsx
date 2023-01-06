@@ -33,7 +33,7 @@ const Footer = () => {
 }
 
 const UserMenu = () => {
-    let upload_btn, post_btn;
+    let upload_btn, post_btn, content;
 
     hotkeys.filter = function (event) {
         return true;
@@ -49,10 +49,44 @@ const UserMenu = () => {
             localStorage.clear();
             location.reload();
         }} />
-        <Button name="publish_rss" value="Update RSS" />
-        <Button name="update_easel" value="Update easel.php" />
-        <TextEdit name="new_post" />
-        <Button ref={post_btn} name="post" value="Post (Shift + Enter)" />
+        <Button name="publish_rss" value="Update RSS" type="button" onClick={(e) => {
+            e.preventDefault();
+
+            let formData = new FormData();
+            formData.append('publish_rss', true);
+
+            fetch("api.php", {
+                method: 'POST',
+                body: formData
+            }).then(x => x.text()).then(x => {
+                console.log(x);
+            })
+        }} />
+        <Button name="update_easel" value="Update easel.php" type="button" onClick={(e) => {
+            e.preventDefault();
+
+            let formData = new FormData();
+            formData.append('update_easel', true);
+
+            fetch("api.php", {
+                method: 'POST',
+                body: formData
+            }).then(x => x.text()).then(x => {
+                console.log(x);
+            })
+        }} />
+        <TextEdit name="new_post" ref={content} />
+        <Button ref={post_btn} name="post" value="Post (Shift + Enter)" type="button" onClick={(e) => {
+            e.preventDefault();
+
+            let formData = new FormData();
+            formData.append('new_post', content.value);
+
+            fetch("api.php", {
+                method: 'POST',
+                body: formData
+            })
+        }} />
         <FileUpload ref={upload_btn} name="upload_media" onChange={() => {
             let form_el = upload_btn.parentElement.parentElement;
             var trigger = document.createElement("input");
@@ -89,7 +123,7 @@ const Nav = () => {
     const [isLoggedIn] = useEaselAuth();
 
     return <div id="nav">
-        <form method="POST" encType="multipart/form-data">
+        <form method="POST" encType="multipart/form-data" >
 
             {isLoggedIn() ? <UserMenu /> : <AnonymousMenu />}
 
