@@ -31,6 +31,8 @@ const Footer = () => {
 }
 
 const UserMenu = () => {
+    let upload_btn;
+
     return <>
         <Button value="Logout" name="logout" type="button" onClick={() => {
             localStorage.clear();
@@ -40,7 +42,16 @@ const UserMenu = () => {
         <Button name="update_easel" value="Update easel.php" />
         <TextEdit name="new_post" />
         <Button name="post" value="Post (Shift + Enter)" />
-        <FileUpload />
+        <FileUpload ref={upload_btn} name="upload_media" onChange={() => {
+            let form_el = upload_btn.parentElement.parentElement;
+            var trigger = document.createElement("input");
+            trigger.type = "text";
+            trigger.value = "true"
+            trigger.name = "has_upload";
+            trigger.style.display = "none";
+            form_el.appendChild(trigger);
+            form_el.submit();
+        }} />
     </>;
 }
 
