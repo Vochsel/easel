@@ -159,14 +159,16 @@ function update($version)
         } else {
             // $url = "https://cdn.jsdelivr.net/gh/vochsel/easel/src/easel.php";
 
-            $curl = curl_init($source);
+            $curl = curl_init();
+
+            $fp = fopen($dest, "w+");
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-            $remoteContents = curl_exec($curl);
-            if (file_put_contents($dest, $remoteContents, LOCK_EX)) {
-                // echo "File downloaded successfully";
-            } else {
-                // echo "File downloading failed.";
-            }
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($curl, CURLOPT_FILE, $fp);
+            curl_setopt($curl, CURLOPT_URL, $source);
+            curl_exec($curl);
+            curl_close($curl);
+            fclose($fp);
         }
     }
 
