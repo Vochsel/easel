@@ -2,7 +2,6 @@ import { checkLogin, storePrivateKey } from "../auth";
 import { Button, FileUpload, IconButton, TextEdit } from "../components/input";
 import { useEaselAuth } from "../context/auth";
 
-import hotkeys from 'hotkeys-js';
 import { publishRSS, syncServer } from "../feature/blog";
 
 const Header = ({ metadata }) => {
@@ -47,17 +46,6 @@ const Footer = () => {
 }
 
 const UserMenu = () => {
-    let upload_btn, post_btn, content;
-
-    hotkeys.filter = function (event) {
-        return true;
-    }
-
-    hotkeys('shift+enter', 'all', (e) => {
-        e.preventDefault();
-        post_btn.click();
-    })
-
     return <>
         <IconButton onClick={() => {
             localStorage.clear();

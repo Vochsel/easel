@@ -5,6 +5,7 @@ import { useEaselAuth } from "../context/auth";
 import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components/input";
 import { postItem, uploadItem } from "../feature/blog";
 import 'boxicons';
+import hotkeys from 'hotkeys-js';
 
 const ItemMetadata = (props) => {
     const [isLoggedIn] = useEaselAuth();
@@ -61,7 +62,18 @@ const Item = (props) => {
 }
 
 const NewItem = (props) => {
-    let textRef, uploadRef;
+    let textRef, uploadRef, postRef;
+    
+    hotkeys.filter = function (event) {
+        return true;
+    }
+
+    hotkeys('shift+enter', 'all', (e) => {
+        e.preventDefault();
+        postRef.click();
+    })
+
+
 
     return <div className="item" style={{ "text-align": 'right' }}>
         <hr />
@@ -87,7 +99,7 @@ const NewItem = (props) => {
                 }} />
             </IconButton>
 
-            <Button style={{
+            <Button ref={postRef} title="Post (Shift+Enter)" style={{
                 "margin-bottom": '5px',
                 "margin-top": '10px',
             }} value="Post" onClick={() => {
