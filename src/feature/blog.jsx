@@ -20,6 +20,17 @@ const editItem = async (new_value, path) => {
     }).then(x => x.text());
 }
 
+const deleteItem = async(path) => {
+    
+    let formData = new FormData();
+    formData.append('delete_post', path);
+
+    return fetch("api.php", {
+        method: 'POST',
+        body: formData
+    }).then(x => x.text());
+}
+
 const uploadItem = async (file) => {
     let formData = new FormData();
     formData.append('has_upload', true);
@@ -53,4 +64,4 @@ const syncServer = async (version = "latest") => {
     }).then(x => x.text());
 }
 
-export { postItem, editItem, uploadItem, publishRSS, syncServer };
+export { postItem, editItem, uploadItem, publishRSS, syncServer, deleteItem };

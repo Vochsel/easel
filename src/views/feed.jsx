@@ -3,7 +3,7 @@ import { loadItem, loadManifest } from "../loaders";
 import { Converter } from "showdown";
 import { useEaselAuth } from "../context/auth";
 import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components/input";
-import { postItem, uploadItem } from "../feature/blog";
+import { deleteItem, postItem, uploadItem } from "../feature/blog";
 import 'boxicons';
 import hotkeys from 'hotkeys-js';
 
@@ -22,8 +22,14 @@ const ItemMetadata = (props) => {
         }
     </IconButton>;
 
+    const deleteButton = <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
+        deleteItem(props.item()?.source).then(x => console.log(x)).then(() => location.reload());
+    }}>
+        <box-icon type='solid' name='trash' size='sm' color="#777" />
+    </IconButton>;
+
     return <div className="metadata">
-        #<b>{props.item()?.item_name}</b> - {new Date(props.item()?.data?.lastModified).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })} {isLoggedIn() && editButton}
+        #<b>{props.item()?.item_name}</b> - {new Date(props.item()?.data?.lastModified).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })} {isLoggedIn() && editButton} {isLoggedIn() && deleteButton}
     </div>;
 }
 
@@ -63,7 +69,7 @@ const Item = (props) => {
 
 const NewItem = (props) => {
     let textRef, uploadRef, postRef;
-    
+
     hotkeys.filter = function (event) {
         return true;
     }

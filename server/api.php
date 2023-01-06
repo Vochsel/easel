@@ -107,6 +107,24 @@ function edit($dir, $name, $contents)
     echo "Saved edit";
 }
 
+function deleteItem($dir, $name)
+{
+    $file_path = $dir . "/" . $name;
+
+    // Remove file
+    unlink ($file_path);
+
+    // Remove from manifest
+    $manifest_path = $dir . "/manifest.txt";
+
+    $fileContents = file_get_contents($manifest_path);
+    $fileContents = str_replace($name . "\n", "", $fileContents);
+
+    file_put_contents($manifest_path, $fileContents);
+
+    echo "Deleted item";
+}
+
 function upload($dir)
 {
     // TODO: make this robust
@@ -221,5 +239,10 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
     $new_content = $_POST['edit_post'];
     $source_name = $_POST['source'];
     edit($directory, $source_name, $new_content);
+}
+
+if (isset($_POST['delete_post']) && $_POST['delete_post'] != null) {
+    $source_name = $_POST['delete_post'];
+    deleteItem($directory, $source_name);
 }
 ?>
