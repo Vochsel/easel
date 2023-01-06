@@ -33,7 +33,7 @@ const Footer = () => {
 }
 
 const UserMenu = () => {
-    let upload_btn, post_btn;
+    let upload_btn, post_btn, content;
 
     hotkeys.filter = function (event) {
         return true;
@@ -51,8 +51,18 @@ const UserMenu = () => {
         }} />
         <Button name="publish_rss" value="Update RSS" />
         <Button name="update_easel" value="Update easel.php" />
-        <TextEdit name="new_post" />
-        <Button ref={post_btn} name="post" value="Post (Shift + Enter)" />
+        <TextEdit name="new_post" ref={content} />
+        <Button ref={post_btn} name="post" value="Post (Shift + Enter)" type="button" onClick={(e) => {
+            e.preventDefault();
+            console.log("post new content");
+            let formData = new FormData();
+            formData.append('new_post', content.value);
+
+            fetch("api.php", {
+                method: 'POST',
+                body: formData
+            })
+        }} />
         <FileUpload ref={upload_btn} name="upload_media" onChange={() => {
             let form_el = upload_btn.parentElement.parentElement;
             var trigger = document.createElement("input");
@@ -89,7 +99,7 @@ const Nav = () => {
     const [isLoggedIn] = useEaselAuth();
 
     return <div id="nav">
-        <form method="POST" encType="multipart/form-data">
+        <form method="POST" encType="multipart/form-data" >
 
             {isLoggedIn() ? <UserMenu /> : <AnonymousMenu />}
 
