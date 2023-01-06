@@ -15,10 +15,12 @@ const Header = ({ metadata }) => {
                 src={metadata.profilePicture}
                 width={75}
                 height={75}
+                crossOrigin
             />
             <img
                 id='headerPicture'
                 src={metadata.headerPicture}
+                crossOrigin
             />
         </div>
         <div style={{ display: 'flex' }}>
