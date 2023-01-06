@@ -3,7 +3,7 @@ const Button = (props) => {
 }
 
 const IconButton = (props) => {
-    return <div className="icon-button" onClick={props.onClick}>
+    return <div className="icon-button" onClick={props.onClick} style={props.style}>
         {props.children}
     </div>
 }
