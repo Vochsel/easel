@@ -45,9 +45,10 @@ function getRemote($source, $dest)
     }
 }
 
-if (!file_exists("./common.php"))
+// Always pull in development, only pull if first run on prod
+if (isLocalhost() || !file_exists("./common.php"))
     getRemote("{$CDN_PREFIX}server/common.php", "./common.php");
-if (!file_exists("./api.php"))
+if (isLocalhost() || !file_exists("./api.php"))
     getRemote("{$CDN_PREFIX}server/api.php", "./api.php");
 
 // Require

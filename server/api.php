@@ -3,6 +3,9 @@
 $VERSION = "latest";
 // phpinfo();
 
+if (file_exists("./current_version.txt"))
+    $VERSION = file_get_contents("./current_version.txt");
+
 function isLocalhost($whitelist = ['127.0.0.1', '::1'])
 {
     return in_array($_SERVER['REMOTE_ADDR'], $whitelist);
@@ -15,6 +18,20 @@ if (!isLocalhost()) {
     $CDN_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@$VERSION/";
 }
 
+?>
+
+<?php
+// TODO: This needs to be made more extensible
+function convert_urls_to_hyperlinks($string)
+{
+    $url = '~(?!.*(youtube\.(com|it|fr|co\.uk|de|es|ru|in|com\.au|jp|cn)))(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
+    $string = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $string);
+    return $string;
+}
+function convert_youtube_to_embed($string)
+{
+    return preg_replace("/\s*[a-zA-Z\/\/:\.]*youtube.com\/watch\?v=([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i", "<iframe width=\"420\" height=\"315\" src=\"//www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>", $string);
+}
 ?>
 
 <?php
@@ -83,7 +100,9 @@ function rss($dir)
 function post($dir, $name, $contents)
 {
     $file_path = $dir . "/" . $name;
-    // echo $file_path;
+
+    $contents = convert_urls_to_hyperlinks($contents);
+    $contents = convert_youtube_to_embed($contents);
     file_put_contents($file_path, $contents);
 
     $manifest_path = $dir . "/manifest.txt";
@@ -112,7 +131,7 @@ function deleteItem($dir, $name)
     $file_path = $dir . "/" . $name;
 
     // Remove file
-    unlink ($file_path);
+    unlink($file_path);
 
     // Remove from manifest
     $manifest_path = $dir . "/manifest.txt";
@@ -164,7 +183,7 @@ function upload($dir)
 function update($version)
 {
     echo "Updating with version: $version\n";
-    
+
     // TODO: move to .easel/
     file_put_contents("current_version.txt", $version);
 
@@ -207,9 +226,21 @@ function update($version)
 
     echo "Updated PHP";
 }
-// print_r($_FILES);
 
-// print_r($_FILES);
+function login($private_key)
+{
+    ob_start();
+    session_start();
+
+}
+
+function logout()
+{
+    session_start();
+    unset($_SESSION["username"]);
+    unset($_SESSION["password"]);
+}
+
 
 // Sync and create rss.xml file
 if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
