@@ -3,6 +3,7 @@ import { Button, FileUpload, IconButton, TextEdit } from "../components/input";
 import { useEaselAuth } from "../context/auth";
 
 import hotkeys from 'hotkeys-js';
+import { publishRSS, syncServer } from "../feature/blog";
 
 const Header = ({ metadata }) => {
     const [isLoggedIn] = useEaselAuth();
@@ -63,6 +64,22 @@ const UserMenu = () => {
             location.reload();
         }}>
             <box-icon type='solid' name='user' size="md" color="#bbb"></box-icon>
+        </IconButton>
+        <IconButton onClick={() => {
+            publishRSS().then(x => {
+                console.log(x);
+            });
+        }}>
+            <box-icon name='rss' size="md" color="#bbb"></box-icon>
+        </IconButton>
+        <IconButton onClick={() => {
+            const version = prompt("Easel version preference:", "latest");
+            syncServer(version).then(x => {
+                console.log(x);
+                location.reload();
+            });
+        }}>
+            <box-icon name='sync' size="md" color="#bbb"></box-icon>
         </IconButton>
 
         {/* <Button name="publish_rss" value="Update RSS" />

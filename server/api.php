@@ -136,39 +136,50 @@ function upload($dir)
             } else if ($target_file_extension == "mp4") {
                 post_latest("./content/feed", "<video src='$target_file' width='100%' height='100%' muted autoplay playsInline controls/>");
             }
-              echo "The file ". htmlspecialchars( basename( $_FILES["upload_media"]["name"])). " has been uploaded.";
+            echo "The file " . htmlspecialchars(basename($_FILES["upload_media"]["name"])) . " has been uploaded.";
         } else {
-              echo "Sorry, there was an error uploading your file.";
+            echo "Sorry, there was an error uploading your file.";
         }
     }
 }
 
-function update()
+function update($version)
 {
-    // It seems not all installations of php can file_get_contents from url...
-    // This does assume that curl binaries are installed, which doesnt seem to be the case on windows
-    // global $CDN_PREFIX;
-    $url = "https://cdn.jsdelivr.net/gh/vochsel/easel/src/easel.php";
+    echo "Updating with version: $version\n";
+    function getRemote($source, $dest)
+    {
+        if (isLocalhost()) {
+            $remote_contents = file_get_contents($source, true);
 
-    // $curlSession = curl_init();
-    // curl_setopt($curlSession, CURLOPT_URL, $url);
-    // curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
-    // curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
-    // curl_setopt($curlSession, CURLOPT_FOLLOWLOCATION, true);
+            if (file_put_contents($dest, $remote_contents, LOCK_EX)) {
+                // echo "File downloaded successfully";
+            } else {
+                // echo "File downloading failed.";
+            }
+        } else {
+            // $url = "https://cdn.jsdelivr.net/gh/vochsel/easel/src/easel.php";
 
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-
-    $remoteContents = curl_exec($curl);
-    // echo $remoteContents;
-
-    $local = "./easel.php";
-    // echo $url . " -> " . $local;
-    if (file_put_contents($local, $remoteContents, LOCK_EX)) {
-        // echo "File downloaded successfully";
-    } else {
-        // echo "File downloading failed.";
+            $curl = curl_init($source);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            $remoteContents = curl_exec($curl);
+            if (file_put_contents($dest, $remoteContents, LOCK_EX)) {
+                // echo "File downloaded successfully";
+            } else {
+                // echo "File downloading failed.";
+            }
+        }
     }
+
+    $_PREFIX = "../../";
+
+    if (!isLocalhost()) {
+        // Moving to latest to improve testing time
+        $_PREFIX = "https://cdn.jsdelivr.net/gh/vochsel/easel@$version/";
+    }
+
+
+    getRemote("{$_PREFIX}server/api.php", "./api.php");
+    getRemote("{$_PREFIX}server/common.php", "./common.php");
 
     echo "Updated PHP";
 }
@@ -181,7 +192,7 @@ if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
     rss("./content/feed");
 }
 if (isset($_POST['update_easel']) && $_POST['update_easel'] != null) {
-    update();
+    update($_POST['update_easel']);
 }
 if (isset($_POST['has_upload']) && $_POST['has_upload'] != null) {
     upload("uploads/");

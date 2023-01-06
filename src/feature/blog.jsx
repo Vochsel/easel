@@ -31,4 +31,26 @@ const uploadItem = async (file) => {
     }).then(x => x.text());
 }
 
-export { postItem, editItem, uploadItem };
+const publishRSS = async () => {
+
+    let formData = new FormData();
+    formData.append('publish_rss', true);
+
+    return fetch("api.php", {
+        method: 'POST',
+        body: formData
+    }).then(x => x.text());
+}
+
+const syncServer = async (version = "latest") => {
+
+    let formData = new FormData();
+    formData.append('update_easel', version);
+
+    return fetch("api.php", {
+        method: 'POST',
+        body: formData
+    }).then(x => x.text());
+}
+
+export { postItem, editItem, uploadItem, publishRSS, syncServer };

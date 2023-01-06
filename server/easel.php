@@ -39,8 +39,10 @@ function getRemote($source, $dest)
     }
 }
 
-getRemote("{$CDN_PREFIX}server/common.php", "./common.php");
-getRemote("{$CDN_PREFIX}server/api.php", "./api.php");
+if (!file_exists("./common.php"))
+    getRemote("{$CDN_PREFIX}server/common.php", "./common.php");
+if (!file_exists("./api.php"))
+    getRemote("{$CDN_PREFIX}server/api.php", "./api.php");
 
 // Require
 
