@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "babel-preset-solid": "^1.6.7",
-    "lodash": "^4.17.21",
     "showdown": "^2.1.0",
     "solid-js": "^1.6.7"
   }
