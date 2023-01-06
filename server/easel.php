@@ -215,7 +215,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
 ?>
 
 
-<script src="<?php echo $CDN_PREFIX ?>src/common.js"></script>
+<script src="<?php echo $CDN_PREFIX ?>dist/bundle.js"></script>
 <link href="<?php echo $CDN_PREFIX ?>src/styles.css" type="text/css" rel="stylesheet" crossorigin="crossorigin">
 
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -231,14 +231,7 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
     const metadata = <?php echo $metadata_JSON; ?>
 
         function init() {
-
-            renderProfileHeader(metadata);
-            renderNav();
-            loadContent(location.pathname + "content/feed");
-
-            if (!elementExists("footer")) {
-                renderEaselFooter();
-            }
+            setupPage(metadata)
         }
 
     window.addEventListener('load', init);

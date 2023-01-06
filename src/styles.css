@@ -21,7 +21,7 @@ body {
     box-sizing: border-box;
 }
 
-#nav textarea {
+#nav .text_edit {
     padding: 1vw;
     display: block;
     box-sizing: border-box;
