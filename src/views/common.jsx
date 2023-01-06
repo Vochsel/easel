@@ -46,7 +46,7 @@ const Footer = () => {
 }
 
 const UserMenu = () => {
-    let upload_btn, post_btn;
+    let upload_btn, post_btn, content;
 
     hotkeys.filter = function (event) {
         return true;
@@ -94,7 +94,7 @@ const Nav = () => {
     const [isLoggedIn] = useEaselAuth();
 
     return <div id="nav">
-        <form method="POST" encType="multipart/form-data">
+        <form method="POST" encType="multipart/form-data" >
 
             {isLoggedIn() ? <UserMenu /> : <AnonymousMenu />}
 
