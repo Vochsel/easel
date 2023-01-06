@@ -1,5 +1,5 @@
-import { createResource, createSignal, For, lazy, Suspense } from "solid-js";
-import { fetchContent, loadContent, loadContentFromManifest, loadItem, loadManifest } from "../loaders";
+import { createResource, createSignal, For, Suspense } from "solid-js";
+import { loadItem, loadManifest } from "../loaders";
 import { Converter } from "showdown";
 import { useEaselAuth } from "../context/auth";
 import { TextEdit } from "../components/input";
@@ -18,7 +18,7 @@ const ItemMetadata = (props) => {
 }
 
 const ItemContent = (props) => {
-    const converter = new showdown.Converter();
+    const converter = new Converter();
 
     return <div className="content">
         {
@@ -49,10 +49,8 @@ const Item = (props) => {
 const FeedItems = () => {
     const [files] = createResource(location.pathname + "content/feed", loadManifest);
 
-
     return <div>
         <For each={files()}>
-
             {(file, i) => <Suspense fallback={<p>Loading</p>}>
                 <Item source={file} />
             </Suspense>
@@ -62,7 +60,6 @@ const FeedItems = () => {
 }
 
 const Feed = () => {
-
     return <div>
         <Suspense fallback={<p>Loading...</p>}>
             <FeedItems />
