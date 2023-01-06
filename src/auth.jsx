@@ -1,3 +1,4 @@
+import JSEncrypt from "jsencrypt";
 
 export function storePrivateKey(key) {
     localStorage.setItem('privateKey', key);

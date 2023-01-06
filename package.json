@@ -29,6 +29,7 @@
   "dependencies": {
     "babel-preset-solid": "^1.6.7",
     "hotkeys-js": "^3.10.1",
+    "jsencrypt": "3.2.1",
     "showdown": "^2.1.0",
     "solid-js": "^1.6.7"
   }
