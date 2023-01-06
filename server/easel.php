@@ -1,6 +1,10 @@
 <?php
 // Can be overided locally
 $VERSION = "latest";
+
+if (file_exists("./current_version.txt"))
+    $VERSION = file_get_contents("./current_version.txt");
+
 // phpinfo();
 
 function isLocalhost($whitelist = ['127.0.0.1', '::1'])

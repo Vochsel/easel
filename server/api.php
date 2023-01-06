@@ -164,6 +164,10 @@ function upload($dir)
 function update($version)
 {
     echo "Updating with version: $version\n";
+    
+    // TODO: move to .easel/
+    file_put_contents("current_version.txt", $version);
+
     function getRemote($source, $dest)
     {
         if (isLocalhost()) {
