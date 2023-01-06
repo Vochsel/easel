@@ -229,20 +229,12 @@ if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
 <script>
     console.log("Easel - PHP");
     const metadata = <?php echo $metadata_JSON; ?>
-    window.setupPage(metadata)
 
         function init() {
-
-            renderProfileHeader(metadata);
-            renderNav();
-            loadContent(location.pathname + "content/feed");
-
-            if (!elementExists("footer")) {
-                renderEaselFooter();
-            }
+            setupPage(metadata)
         }
 
-    // window.addEventListener('load', init);
+    window.addEventListener('load', init);
 </script>
 
 <title>

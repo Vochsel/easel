@@ -52,10 +52,20 @@ async function loadContentDynamically(dir) {
     console.log("Finished loading content");
 }
 
+async function loadItem(dir, file_name) {
+    return new Promise(async resolve => {
+        const item_name = file_name.split('.')[0];
+        const data = await loadFile(`${dir}/${file_name}`)
 
-async function loadContentFromManifest(dir) {
-    // var container = createOrGetElement("container");
-    const files = await loadManifest(dir);
+        resolve({
+            data,
+            item_name,
+            source: file_name
+        });
+    })
+}
+
+async function loadContentFromManifest(dir, files) {
     console.log(`Loaded manifest.txt and found ${files.length} items`)
     let output = [];
     // for(let i = files.length - 1; i >= 0; --i) {
@@ -91,4 +101,4 @@ function fetchContent(dir) {
     });
 }
 
-export { loadContent, fetchContent }
+export { loadManifest, loadContentFromManifest, fetchContent, loadItem }

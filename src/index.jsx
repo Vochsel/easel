@@ -4,14 +4,17 @@ import './styles.css';
 import { render } from 'solid-js/web';
 import { Header, Footer } from './views/common';
 import { Feed } from './views/feed';
+import { EaselAuthProvider } from './context/auth';
 
 function App({ metadata }) {
 
-    return <div id='container'>
-        <Header metadata={metadata} />
-        <Feed />
-        <Footer />
-    </div>;
+    return <EaselAuthProvider>
+        <div id='container'>
+            <Header metadata={metadata} />
+            <Feed />
+            <Footer />
+        </div>
+    </EaselAuthProvider>;
 }
 
 window.setupPage = (metadata) => {

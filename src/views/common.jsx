@@ -1,3 +1,6 @@
+import { checkLogin, storePrivateKey } from "../auth";
+import { Button, FileUpload, TextEdit } from "../components/input";
+import { useEaselAuth } from "../context/auth";
 
 const Header = ({ metadata }) => {
     return <div id='profile'>
@@ -17,6 +20,7 @@ const Header = ({ metadata }) => {
         <span id='name'>{metadata.name}</span>
         <span id='handle'>@{metadata.handle}</span>
         <div id='description' innerHTML={metadata.description}></div>
+        <Nav />
     </div>;
 }
 
@@ -26,4 +30,49 @@ const Footer = () => {
     </div>;
 }
 
-export { Header, Footer };
+const UserMenu = () => {
+    return <>
+        <Button value="Logout" name="logout" type="button" onClick={() => {
+            localStorage.clear();
+            location.reload();
+        }} />
+        <Button name="publish_rss" value="Update RSS" />
+        <Button name="update_easel" value="Update easel.php" />
+        <TextEdit name="new_post" />
+        <Button name="post" value="Post (Shift + Enter)" />
+        <FileUpload />
+    </>;
+}
+
+const AnonymousMenu = () => {
+    return <>
+        <Button value="Follow" name="follow" />
+        <Button value="Login" name="login" onClick={() => {
+            const private_key = prompt("Enter private key (Saved locally)");
+            try {
+                if (checkLogin(private_key)) {
+                    storePrivateKey(private_key);
+                    location.reload();
+                    return;
+                }
+            } catch (error) {
+                alert("Incorrect password");
+
+            }
+        }} />
+    </>;
+}
+
+const Nav = () => {
+    const [isLoggedIn] = useEaselAuth();
+
+    return <div id="nav">
+        <form method="POST" encType="multipart/form-data">
+
+            {isLoggedIn() ? <UserMenu /> : <AnonymousMenu />}
+
+        </form>
+    </div>;
+}
+
+export { Header, Footer, Nav };
