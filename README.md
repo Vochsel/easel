@@ -45,6 +45,7 @@ We need to bundle the easel.php file alongside index.php (Maybe we can update th
 
 ## Behind the scenes...
 It's literally just a website....
+it is. 
 
 ### Vague Roadmap
 (No gaurantees, but feel free to join the conversation or contribute!)
