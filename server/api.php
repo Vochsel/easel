@@ -1,7 +1,6 @@
 <?php
 // Can be overided locally
 $VERSION = "latest";
-// date_default_timezone_set();
 
 // phpinfo();
 
@@ -11,6 +10,24 @@ if (file_exists("./current_version.txt"))
 function isLocalhost($whitelist = ['127.0.0.1', '::1'])
 {
     return in_array($_SERVER['REMOTE_ADDR'], $whitelist);
+}
+
+function getCurrentURL()
+{
+    // date_default_timezone_set();
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+        $url = "https://";
+    else
+        $url = "http://";
+    // Append the host(domain name, ip) to the URL.   
+    $url .= $_SERVER['HTTP_HOST'];
+
+    // Append the requested resource location to the URL   
+    $url .= $_SERVER['REQUEST_URI'];
+
+    $url = str_replace("api.php", '', $url);
+
+    return $url;
 }
 
 $CDN_PREFIX = "../../";
@@ -52,12 +69,12 @@ function rss($dir)
 
     // echo "RSS";
     $rss_file = fopen("./rss.xml", 'w');
-    
+
     fwrite($rss_file, '<?xml version="1.0" encoding="UTF-8"?>');
     fwrite($rss_file, '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">');
     fwrite($rss_file, "<channel>");
     fwrite($rss_file, "<title>" . $metadata->{'name'} . " - @" . $metadata->{'handle'} . "</title>");
-    fwrite($rss_file, "<link>http://www.vochsel.com/easel/</link>");
+    fwrite($rss_file, "<link>" . getCurrentURL() . "</link>");
     fwrite($rss_file, "<description>" . htmlspecialchars($metadata->{'description'}) . "</description>");
 
     $manifest_path = $dir . "/manifest.txt";
@@ -79,10 +96,12 @@ function rss($dir)
         // $fileContents = file_get_contents($dir . "/" . str_replace(array("\\r", "\\n", ' '), '', $line));
         // echo print_r($fileContents);
 
+        $post_abs_url = getCurrentURL() . substr($file_path, 2);
+
         fwrite($rss_file, "<item>");
         fwrite($rss_file, "<title>" . $name . "</title>");
-        fwrite($rss_file, "<link>http://www.vochsel.com/easel/$file_path</link>");
-        fwrite($rss_file, "<guid isPermaLink='true'>http://www.vochsel.com/easel/$file_path</guid>");
+        fwrite($rss_file, "<link>$post_abs_url</link>");
+        fwrite($rss_file, "<guid isPermaLink='true'>$post_abs_url</guid>");
 
         // fwrite($rss_file, "<author>$author</author>"); // Needs to be an email?
         fwrite($rss_file, "<description>$fileContents</description>");
@@ -102,8 +121,8 @@ function post($dir, $name, $contents)
 {
     $file_path = $dir . "/" . $name;
 
-    $contents = convert_urls_to_hyperlinks($contents);
-    $contents = convert_youtube_to_embed($contents);
+    // $contents = convert_urls_to_hyperlinks($contents);
+    // $contents = convert_youtube_to_embed($contents);
     file_put_contents($file_path, $contents);
 
     $manifest_path = $dir . "/manifest.txt";
@@ -157,6 +176,8 @@ function upload($dir)
     $uploadOk = 1;
     $target_file_extension = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
+    $file_url = getCurrentURL() . $target_file;
+
     if ($uploadOk == 0) {
         echo "Sorry, your file was not uploaded.";
         // if everything is ok, try to upload file
@@ -164,15 +185,15 @@ function upload($dir)
         if (move_uploaded_file($_FILES["upload_media"]["tmp_name"], $target_file)) {
             if ($target_file_extension == "glb") {
                 post_latest("./content/feed", "<model-viewer class='media'
-                    src='$target_file' ar shadow-intensity='1' camera-controls
+                    src='$file_url' ar shadow-intensity='1' camera-controls
                     touch-action='pan-y'></model-viewer>
                 ");
             } else if (in_array($target_file_extension, array("png", "jpg", "webp", "svg", "jpeg", "bmp"))) {
-                post_latest("./content/feed", "<img class='media' src='$target_file' width='100%' height='100%'/>");
+                post_latest("./content/feed", "<img class='media' src='$file_url' width='100%' height='100%'/>");
             } else if (in_array($target_file_extension, array("wav", "mp3", "ogg"))) {
-                post_latest("./content/feed", "<audio class='media' src='$target_file' width='100%' height='100%' controls/>");
+                post_latest("./content/feed", "<audio class='media' src='$file_url' width='100%' height='100%' controls/>");
             } else if ($target_file_extension == "mp4") {
-                post_latest("./content/feed", "<video class='media' src='$target_file' width='100%' height='100%' muted autoplay playsInline controls/>");
+                post_latest("./content/feed", "<video class='media' src='$file_url' width='100%' height='100%' muted autoplay playsInline controls/>");
             }
             echo "The file " . htmlspecialchars(basename($_FILES["upload_media"]["name"])) . " has been uploaded.";
         } else {
@@ -183,6 +204,8 @@ function upload($dir)
 
 function update($version)
 {
+    if ($version == "null")
+        return;
     echo "Updating with version: $version\n";
 
     // TODO: move to .easel/
