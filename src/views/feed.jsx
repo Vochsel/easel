@@ -17,15 +17,15 @@ const ItemMetadata = (props) => {
         }
     }}>
         {props.isEditing() ?
-            <box-icon type='solid' name='save' size='sm' color="#777" /> :
-            <box-icon type='solid' name='edit' size='sm' color="#777" />
+            <box-icon type='solid' name='save' size='2.5vh' color="#777" /> :
+            <box-icon type='solid' name='edit' size='2.5vh' color="#777" />
         }
     </IconButton>;
 
     const deleteButton = <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
         deleteItem(props.item()?.source).then(x => console.log(x)).then(() => location.reload());
     }}>
-        <box-icon type='solid' name='trash' size='sm' color="#777" />
+        <box-icon type='solid' name='trash' size='2.5vh' color="#777" />
     </IconButton>;
 
     return <div className="metadata">

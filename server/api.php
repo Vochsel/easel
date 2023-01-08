@@ -162,16 +162,16 @@ function upload($dir)
     } else {
         if (move_uploaded_file($_FILES["upload_media"]["tmp_name"], $target_file)) {
             if ($target_file_extension == "glb") {
-                post_latest("./content/feed", "<model-viewer
+                post_latest("./content/feed", "<model-viewer class='media'
                     src='$target_file' ar shadow-intensity='1' camera-controls
                     touch-action='pan-y'></model-viewer>
                 ");
             } else if (in_array($target_file_extension, array("png", "jpg", "webp", "svg", "jpeg", "bmp"))) {
-                post_latest("./content/feed", "<img src='$target_file' width='100%' height='100%'/>");
+                post_latest("./content/feed", "<img class='media' src='$target_file' width='100%' height='100%'/>");
             } else if (in_array($target_file_extension, array("wav", "mp3", "ogg"))) {
-                post_latest("./content/feed", "<audio src='$target_file' width='100%' height='100%' controls/>");
+                post_latest("./content/feed", "<audio class='media' src='$target_file' width='100%' height='100%' controls/>");
             } else if ($target_file_extension == "mp4") {
-                post_latest("./content/feed", "<video src='$target_file' width='100%' height='100%' muted autoplay playsInline controls/>");
+                post_latest("./content/feed", "<video class='media' src='$target_file' width='100%' height='100%' muted autoplay playsInline controls/>");
             }
             echo "The file " . htmlspecialchars(basename($_FILES["upload_media"]["name"])) . " has been uploaded.";
         } else {

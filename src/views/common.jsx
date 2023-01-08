@@ -28,14 +28,14 @@ const Header = ({ metadata }) => {
                 <span id='name'>{metadata.name}</span>
                 <span id='handle'>@{metadata.handle}</span>
                 <div id='description' innerHTML={metadata.description}></div>
+                <Nav />
             </div>
             <div>
                 {!isLoggedIn() && <Button value="Follow" name="follow" onClick={() => {
                     alert(`Followed!`)
-                }}/>}
+                }} />}
             </div>
         </div>
-        <Nav />
     </div>;
 }
 
@@ -51,14 +51,14 @@ const UserMenu = () => {
             localStorage.clear();
             location.reload();
         }}>
-            <box-icon type='solid' name='user' size="md" color="#bbb"></box-icon>
+            <box-icon type='solid' name='user' size="3vh" color="#bbb"></box-icon>
         </IconButton>
         <IconButton onClick={() => {
             publishRSS().then(x => {
                 console.log(x);
             });
         }}>
-            <box-icon name='rss' size="md" color="#bbb"></box-icon>
+            <box-icon name='rss' size="3vh" color="#bbb"></box-icon>
         </IconButton>
         <IconButton onClick={() => {
             const version = prompt("Easel version preference:", "latest");
@@ -67,7 +67,7 @@ const UserMenu = () => {
                 location.reload();
             });
         }}>
-            <box-icon name='sync' size="md" color="#bbb"></box-icon>
+            <box-icon name='sync' size="3vh" color="#bbb"></box-icon>
         </IconButton>
 
         {/* <Button name="publish_rss" value="Update RSS" />
