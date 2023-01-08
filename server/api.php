@@ -1,6 +1,8 @@
 <?php
 // Can be overided locally
 $VERSION = "latest";
+// date_default_timezone_set();
+
 // phpinfo();
 
 if (file_exists("./current_version.txt"))
@@ -50,15 +52,13 @@ function rss($dir)
 
     // echo "RSS";
     $rss_file = fopen("./rss.xml", 'w');
-
-    fwrite($rss_file, "");
-
-    fwrite($rss_file, '<?xml version="1.0" encoding="UTF-8" ?>');
-    fwrite($rss_file, '<rss version="2.0">');
+    
+    fwrite($rss_file, '<?xml version="1.0" encoding="UTF-8"?>');
+    fwrite($rss_file, '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">');
     fwrite($rss_file, "<channel>");
     fwrite($rss_file, "<title>" . $metadata->{'name'} . " - @" . $metadata->{'handle'} . "</title>");
-    fwrite($rss_file, "<link>http://www.vochsel.com/blog/</link>");
-    fwrite($rss_file, "<description>Free web building tutorials</description>");
+    fwrite($rss_file, "<link>http://www.vochsel.com/easel/</link>");
+    fwrite($rss_file, "<description>" . htmlspecialchars($metadata->{'description'}) . "</description>");
 
     $manifest_path = $dir . "/manifest.txt";
 
@@ -71,7 +71,7 @@ function rss($dir)
         $file_path = str_replace(array("\r", "\n", ' '), '', $file_path);
         $name = explode(".", $line)[0];
         $author = $metadata->{'handle'};
-        $lastModified = date("F d Y H:i:s.", filemtime($file_path));
+        $lastModified = date("r", filemtime($file_path));
         // echo "|" . $file_path . "|";
         // echo $dir . "/" . $line . "\n";
         $fileContents = file_get_contents($file_path, true);
@@ -81,9 +81,10 @@ function rss($dir)
 
         fwrite($rss_file, "<item>");
         fwrite($rss_file, "<title>" . $name . "</title>");
-        fwrite($rss_file, "<link>http://www.vochsel.com/blog</link>");
+        fwrite($rss_file, "<link>http://www.vochsel.com/easel/$file_path</link>");
+        fwrite($rss_file, "<guid isPermaLink='true'>http://www.vochsel.com/easel/$file_path</guid>");
 
-        fwrite($rss_file, "<author>$author</author>");
+        // fwrite($rss_file, "<author>$author</author>"); // Needs to be an email?
         fwrite($rss_file, "<description>$fileContents</description>");
         fwrite($rss_file, "<pubDate>$lastModified</pubDate>");
         fwrite($rss_file, "</item>");

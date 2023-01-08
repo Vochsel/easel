@@ -3,7 +3,7 @@ import { loadItem, loadManifest } from "../loaders";
 import { Converter } from "showdown";
 import { useEaselAuth } from "../context/auth";
 import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components/input";
-import { deleteItem, postItem, uploadItem } from "../feature/blog";
+import { deleteItem, editItem, postItem, uploadItem } from "../feature/blog";
 import 'boxicons';
 import hotkeys from 'hotkeys-js';
 
