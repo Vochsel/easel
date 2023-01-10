@@ -136,7 +136,6 @@ function post($dir, $name, $contents)
 
 function post_latest($directory, $contents)
 {
-
     $files = glob($directory . "/**.md");
 
     //Put each file name into an array called $filenames
@@ -286,7 +285,7 @@ function login($signature)
         
         $output = new stdClass();
         $output->result = isset($_SESSION['logged_in']) || !$_SESSION['logged_in'];
-        echo json_encode($output);
+        die(json_encode($output));
 
     } else {
         // Cancel
@@ -302,7 +301,7 @@ function logout()
 
     $output = new stdClass();
     $output->result = true;
-    echo json_encode($output);
+    die(json_encode($output));
 }
 ?>
 
@@ -321,13 +320,13 @@ if (isset($_POST['logout']) && $_POST['logout'] != null) {
 if (isset($_POST['is_logged_in']) && $_POST['is_logged_in'] != null) {
     $output = new stdClass();
     $output->result = isset($_SESSION['logged_in']) && $_SESSION['logged_in'];
-    echo json_encode($output);
+    die(json_encode($output));
 }
 
 // Restrict access to other endpoints
 
 if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'])
-    die();
+    die("Error: Not logged in!");
 
 // Sync and create rss.xml file
 if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
