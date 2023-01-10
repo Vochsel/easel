@@ -3,7 +3,7 @@
 import { render } from 'solid-js/web';
 import { Header, Footer } from './views/common';
 import { Feed } from './views/feed';
-import { EaselAuthProvider } from './context/auth';
+import { EaselAuthProvider } from './context/authContext';
 
 function App({ metadata }) {
 

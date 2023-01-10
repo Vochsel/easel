@@ -1,11 +1,10 @@
-import { checkLogin, storePrivateKey } from "../auth";
 import { Button, FileUpload, IconButton, TextEdit } from "../components/input";
-import { useEaselAuth } from "../context/auth";
+import { useEaselAuth } from "../context/authContext";
 
 import { publishRSS, syncServer } from "../feature/blog";
 
 const Header = ({ metadata }) => {
-    const [isLoggedIn] = useEaselAuth();
+    const { isLoggedIn } = useEaselAuth();
 
     return <div id='profile'>
         <div id='profileHeader'>
@@ -46,10 +45,10 @@ const Footer = () => {
 }
 
 const UserMenu = () => {
+    const { logout } = useEaselAuth();
     return <>
         <IconButton onClick={() => {
-            localStorage.clear();
-            location.reload();
+            logout();
         }}>
             <box-icon type='solid' name='user' size="3vh" color="#bbb"></box-icon>
         </IconButton>
@@ -76,19 +75,12 @@ const UserMenu = () => {
 }
 
 const AnonymousMenu = () => {
+    const { login } = useEaselAuth();
+
     return <>
         <IconButton onClick={() => {
             const private_key = prompt("Enter private key (Saved locally)");
-            try {
-                if (checkLogin(private_key)) {
-                    storePrivateKey(private_key);
-                    location.reload();
-                    return;
-                }
-            } catch (error) {
-                alert("Incorrect password");
-
-            }
+            login(private_key);
         }}>
             <box-icon name='user' size="md" color="#bbb"></box-icon>
         </IconButton>
@@ -96,7 +88,7 @@ const AnonymousMenu = () => {
 }
 
 const Nav = () => {
-    const [isLoggedIn] = useEaselAuth();
+    const { isLoggedIn } = useEaselAuth();
 
     return <div id="nav">
         <form method="POST" encType="multipart/form-data" >

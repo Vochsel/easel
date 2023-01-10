@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // Can be overided locally
 $VERSION = "latest";
 
@@ -134,9 +136,18 @@ function post($dir, $name, $contents)
 
 function post_latest($directory, $contents)
 {
-    $filecount = count(glob($directory . "/*"));
 
-    post($directory, $filecount . ".md", $contents);
+    $files = glob($directory . "/**.md");
+
+    //Put each file name into an array called $filenames
+    foreach($files as $i => $file) $filenames[$i] = basename($file);
+
+    //Sort $filenames
+    rsort($filenames, SORT_NUMERIC );
+    $fn = (int) filter_var($filenames[0], FILTER_SANITIZE_NUMBER_INT);
+    $fn += 1;
+
+    post($directory, $fn . ".md", $contents);
 }
 
 function edit($dir, $name, $contents)
@@ -251,20 +262,72 @@ function update($version)
     echo "Updated PHP";
 }
 
-function login($private_key)
+function login($signature)
 {
-    ob_start();
-    session_start();
+    // var_dump(extension_loaded('openssl'));
 
+    // Open profile manifest
+    $easel_metadata_file = fopen("./easel.json", 'r');
+
+    $filesize = filesize("./easel.json");
+    $easel_metadata_text = fread($easel_metadata_file, $filesize);
+    fclose($easel_metadata_file);
+
+    $metadata = json_decode($easel_metadata_text);
+
+    $public_key = $metadata->{'publicKey'};
+    $sig64 = base64_decode($signature);
+    $result = openssl_verify("easel", $sig64, $public_key, OPENSSL_ALGO_SHA256);
+
+    if($result == 1) {
+        // Succesful login
+        $_SESSION['logged_in'] = true;
+        $_SESSION['metadata'] = $metadata;
+        
+        $output = new stdClass();
+        $output->result = isset($_SESSION['logged_in']) || !$_SESSION['logged_in'];
+        echo json_encode($output);
+
+    } else {
+        // Cancel
+        $_SESSION['logged_in'] = false;
+        die("Invalid login");
+    }
 }
 
 function logout()
 {
-    session_start();
-    unset($_SESSION["username"]);
-    unset($_SESSION["password"]);
+    $_SESSION['logged_in'] = false;
+    unset($_SESSION["logged_in"]);
+
+    $output = new stdClass();
+    $output->result = true;
+    echo json_encode($output);
+}
+?>
+
+<?php
+
+// -- Auth endpoints
+
+if (isset($_POST['login']) && $_POST['login'] != null) {
+    login($_POST['login']);
 }
 
+if (isset($_POST['logout']) && $_POST['logout'] != null) {
+    logout();
+}
+
+if (isset($_POST['is_logged_in']) && $_POST['is_logged_in'] != null) {
+    $output = new stdClass();
+    $output->result = isset($_SESSION['logged_in']) && $_SESSION['logged_in'];
+    echo json_encode($output);
+}
+
+// Restrict access to other endpoints
+
+if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'])
+    die();
 
 // Sync and create rss.xml file
 if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
