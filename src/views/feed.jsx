@@ -1,14 +1,14 @@
 import { createResource, createSignal, For, Suspense } from "solid-js";
 import { loadItem, loadManifest } from "../loaders";
 import { Converter } from "showdown";
-import { useEaselAuth } from "../context/auth";
+import { useEaselAuth } from "../context/authContext";
 import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components/input";
 import { deleteItem, editItem, postItem, uploadItem } from "../feature/blog";
 import 'boxicons';
 import hotkeys from 'hotkeys-js';
 
 const ItemMetadata = (props) => {
-    const [isLoggedIn] = useEaselAuth();
+    const { isLoggedIn } = useEaselAuth();
 
     const editButton = <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
         props.setIsEditing(!props.isEditing());
@@ -120,7 +120,7 @@ const NewItem = (props) => {
 const FeedItems = () => {
     const [files] = createResource(location.pathname + "content/feed", loadManifest);
 
-    const [isLoggedIn] = useEaselAuth();
+    const { isLoggedIn } = useEaselAuth();
 
     return <div>
         {isLoggedIn() && <NewItem />}
