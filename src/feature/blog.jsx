@@ -5,7 +5,7 @@ const postItem = async (value) => {
     return fetch("api.php", {
         method: 'POST',
         body: formData
-    }).then(x => x.text());
+    }).then(x => x.json());
 }
 
 const editItem = async (new_value, path) => {

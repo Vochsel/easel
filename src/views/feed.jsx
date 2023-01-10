@@ -6,6 +6,7 @@ import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components
 import { deleteItem, editItem, postItem, uploadItem } from "../feature/blog";
 import 'boxicons';
 import hotkeys from 'hotkeys-js';
+import { EaselFeedProvider, useEaselFeed } from "../context/feedContext";
 
 const ItemMetadata = (props) => {
     const { isLoggedIn } = useEaselAuth();
@@ -79,7 +80,7 @@ const NewItem = (props) => {
         postRef.click();
     })
 
-
+    const { addNewItem } = useEaselFeed();
 
     return <div className="item" style={{ "text-align": 'right' }}>
         <hr />
@@ -109,8 +110,10 @@ const NewItem = (props) => {
                 "margin-bottom": '5px',
                 "margin-top": '10px',
             }} value="Post" onClick={() => {
-                // TODO: Make the feed refresh without a reload
-                postItem(textRef.value).then(() => location.reload())
+                postItem(textRef.value).then(item => {
+                    // TODO: Figure out pathing and abs/rel...
+                    addNewItem(item.path.split('/').slice(-1)[0]);
+                });
 
             }} />
         </div>
@@ -118,13 +121,13 @@ const NewItem = (props) => {
 }
 
 const FeedItems = () => {
-    const [files] = createResource(location.pathname + "content/feed", loadManifest);
 
+    const { items } = useEaselFeed();
     const { isLoggedIn } = useEaselAuth();
 
     return <div>
         {isLoggedIn() && <NewItem />}
-        <For each={files()}>
+        <For each={items()}>
             {(file, i) => <Suspense fallback={<p>Loading</p>}>
                 <Item source={file} />
             </Suspense>
@@ -135,9 +138,11 @@ const FeedItems = () => {
 
 const Feed = () => {
     return <div>
-        <Suspense fallback={<p>Loading...</p>}>
-            <FeedItems />
-        </Suspense>
+        <EaselFeedProvider>
+            <Suspense fallback={<p>Loading...</p>}>
+                <FeedItems />
+            </Suspense>
+        </EaselFeedProvider>
     </div>;
 }
 

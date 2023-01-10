@@ -132,6 +132,8 @@ function post($dir, $name, $contents)
     $fileContents = file_get_contents($manifest_path);
 
     file_put_contents($manifest_path, $name . "\n" . $fileContents);
+
+    return $file_path;
 }
 
 function post_latest($directory, $contents)
@@ -146,7 +148,7 @@ function post_latest($directory, $contents)
     $fn = (int) filter_var($filenames[0], FILTER_SANITIZE_NUMBER_INT);
     $fn += 1;
 
-    post($directory, $fn . ".md", $contents);
+    return post($directory, $fn . ".md", $contents);     
 }
 
 function edit($dir, $name, $contents)
@@ -351,9 +353,13 @@ if (isset($_POST['new_post']) && $_POST['new_post'] != null) {
         file_put_contents($directory . "/manifest.txt", "");
     }
 
-    post_latest($directory, $_POST['new_post']);
+    $path = post_latest($directory, $_POST['new_post']);
     $_POST = array();
     unset($_POST['new_post']);
+
+    $output = new stdClass();
+    $output->path = $path;
+    die(json_encode($output));
 }
 
 if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
