@@ -192,24 +192,26 @@ function upload($dir)
 
     if ($uploadOk == 0) {
         echo "Sorry, your file was not uploaded.";
+        return "";
         // if everything is ok, try to upload file
     } else {
         if (move_uploaded_file($_FILES["upload_media"]["tmp_name"], $target_file)) {
             if ($target_file_extension == "glb") {
-                post_latest("./content/feed", "<model-viewer class='media'
+                return post_latest("./content/feed", "<model-viewer class='media'
                     src='$file_url' ar shadow-intensity='1' camera-controls
                     touch-action='pan-y'></model-viewer>
                 ");
             } else if (in_array($target_file_extension, array("png", "jpg", "webp", "svg", "jpeg", "bmp"))) {
-                post_latest("./content/feed", "<img class='media' src='$file_url' width='100%' height='100%'/>");
+                return post_latest("./content/feed", "<img class='media' src='$file_url' width='100%' height='100%'/>");
             } else if (in_array($target_file_extension, array("wav", "mp3", "ogg"))) {
-                post_latest("./content/feed", "<audio class='media' src='$file_url' width='100%' height='100%' controls/>");
+                return post_latest("./content/feed", "<audio class='media' src='$file_url' width='100%' height='100%' controls/>");
             } else if ($target_file_extension == "mp4") {
-                post_latest("./content/feed", "<video class='media' src='$file_url' width='100%' height='100%' muted autoplay playsInline controls/>");
+                return post_latest("./content/feed", "<video class='media' src='$file_url' width='100%' height='100%' muted autoplay playsInline controls/>");
             }
             echo "The file " . htmlspecialchars(basename($_FILES["upload_media"]["name"])) . " has been uploaded.";
         } else {
             echo "Sorry, there was an error uploading your file.";
+            return "";
         }
     }
 }
@@ -338,7 +340,11 @@ if (isset($_POST['update_easel']) && $_POST['update_easel'] != null) {
     update($_POST['update_easel']);
 }
 if (isset($_POST['has_upload']) && $_POST['has_upload'] != null) {
-    upload("uploads/");
+    $path = upload("uploads/");
+    
+    $output = new stdClass();
+    $output->path = $path;
+    die(json_encode($output));
 }
 
 

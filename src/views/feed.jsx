@@ -101,8 +101,10 @@ const NewItem = (props) => {
             }}>
                 <box-icon name='image-add' size='40px' color="#777" />
                 <FileUploadInvisible ref={uploadRef} onChange={() => {
-                    // TODO: Make the feed refresh without a reload
-                    uploadItem(uploadRef.files[0]).then(() => location.reload())
+                    uploadItem(uploadRef.files[0]).then(item => {
+                        // TODO: Figure out pathing and abs/rel...
+                        addNewItem(item.path.split('/').slice(-1)[0]);
+                    });
                 }} />
             </IconButton>
 

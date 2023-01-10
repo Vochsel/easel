@@ -39,7 +39,7 @@ const uploadItem = async (file) => {
     return fetch("api.php", {
         method: 'POST',
         body: formData
-    }).then(x => x.text());
+    }).then(x => x.json());
 }
 
 const publishRSS = async () => {
