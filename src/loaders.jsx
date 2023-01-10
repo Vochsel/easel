@@ -103,4 +103,4 @@ function fetchContent(dir) {
     });
 }
 
-export { loadManifest, loadContentFromManifest, fetchContent, loadItem }
+export { loadFile, loadManifest, loadContentFromManifest, fetchContent, loadItem }
