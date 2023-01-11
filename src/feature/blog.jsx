@@ -1,9 +1,12 @@
 import { fetchContent, loadContentFromManifest, loadManifest } from "../loaders";
+import { parseContent } from "../utils";
 import { generateRSSFeed } from "./rss";
 
 const postItem = async (value) => {
     let formData = new FormData();
-    formData.append('new_post', value);
+    let value_final = value;
+    value_final = parseContent(value_final);
+    formData.append('new_post', value_final);
 
     return fetch("api.php", {
         method: 'POST',
