@@ -42,89 +42,11 @@ if (!isLocalhost()) {
 ?>
 
 <?php
-// TODO: This needs to be made more extensible
-function convert_urls_to_hyperlinks($string)
-{
-    $url = '~(?!.*(youtube\.(com|it|fr|co\.uk|de|es|ru|in|com\.au|jp|cn)))(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
-    $string = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $string);
-    return $string;
-}
-function convert_youtube_to_embed($string)
-{
-    return preg_replace("/\s*[a-zA-Z\/\/:\.]*youtube.com\/watch\?v=([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i", "<iframe width=\"420\" height=\"315\" src=\"//www.youtube.com/embed/$1\" frameborder=\"0\" allowfullscreen></iframe>", $string);
-}
-?>
-
-<?php
-
-function rss($dir)
-{
-    // Open profile manifest
-    $easel_metadata_file = fopen("./easel.json", 'r');
-
-    $filesize = filesize("./easel.json");
-    $easel_metadata_text = fread($easel_metadata_file, $filesize);
-    fclose($easel_metadata_file);
-
-    $metadata = json_decode($easel_metadata_text);
-    $metadata_JSON = json_encode($metadata);
-
-    // echo "RSS";
-    $rss_file = fopen("./rss.xml", 'w');
-
-    fwrite($rss_file, '<?xml version="1.0" encoding="UTF-8"?>');
-    fwrite($rss_file, '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">');
-    fwrite($rss_file, "<channel>");
-    fwrite($rss_file, "<title>" . $metadata->{'name'} . " - @" . $metadata->{'handle'} . "</title>");
-    fwrite($rss_file, "<link>" . getCurrentURL() . "</link>");
-    fwrite($rss_file, "<description>" . htmlspecialchars($metadata->{'description'}) . "</description>");
-
-    $manifest_path = $dir . "/manifest.txt";
-
-    // $fileContents = file_get_contents($manifest_path);
-
-    $contents = file($manifest_path);
-
-    foreach ($contents as $line) {
-        $file_path = $dir . "/" . $line;
-        $file_path = str_replace(array("\r", "\n", ' '), '', $file_path);
-        $name = explode(".", $line)[0];
-        $author = $metadata->{'handle'};
-        $lastModified = date("r", filemtime($file_path));
-        // echo "|" . $file_path . "|";
-        // echo $dir . "/" . $line . "\n";
-        $fileContents = file_get_contents($file_path, true);
-        $fileContents = htmlspecialchars($fileContents);
-        // $fileContents = file_get_contents($dir . "/" . str_replace(array("\\r", "\\n", ' '), '', $line));
-        // echo print_r($fileContents);
-
-        $post_abs_url = getCurrentURL() . substr($file_path, 2);
-
-        fwrite($rss_file, "<item>");
-        fwrite($rss_file, "<title>" . $name . "</title>");
-        fwrite($rss_file, "<link>$post_abs_url</link>");
-        fwrite($rss_file, "<guid isPermaLink='true'>$post_abs_url</guid>");
-
-        // fwrite($rss_file, "<author>$author</author>"); // Needs to be an email?
-        fwrite($rss_file, "<description>$fileContents</description>");
-        fwrite($rss_file, "<pubDate>$lastModified</pubDate>");
-        fwrite($rss_file, "</item>");
-
-    }
-    fwrite($rss_file, "</channel>");
-
-    fwrite($rss_file, "</rss>");
-
-    fclose($rss_file);
-    echo "Updated RSS";
-}
 
 function post($dir, $name, $contents)
 {
     $file_path = $dir . "/" . $name;
 
-    // $contents = convert_urls_to_hyperlinks($contents);
-    // $contents = convert_youtube_to_embed($contents);
     file_put_contents($file_path, $contents);
 
     $manifest_path = $dir . "/manifest.txt";
@@ -172,6 +94,11 @@ function deleteItem($dir, $name)
     file_put_contents($manifest_path, $fileContents);
 
     echo "Deleted item";
+}
+
+function writeFile($path, $contents)
+{
+    file_put_contents($path, $contents);
 }
 
 function upload($dir)
@@ -329,8 +256,10 @@ if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'])
     die("Error: Not logged in!");
 
 // Sync and create rss.xml file
-if (isset($_POST['publish_rss']) && $_POST['publish_rss'] != null) {
-    rss("./content/feed");
+if (isset($_POST['write_file']) && $_POST['write_file'] != null) {
+    $path = $_POST['path'];
+    $contents = $_POST['contents'];
+    writeFile($path, $contents);
 }
 if (isset($_POST['update_easel']) && $_POST['update_easel'] != null) {
     update($_POST['update_easel']);
