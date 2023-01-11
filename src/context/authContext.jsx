@@ -1,5 +1,7 @@
 import { createSignal, createContext, useContext } from "solid-js";
 import { checkLogin, handleLogin, handleLogout } from "../feature/auth";
+import Cookies from 'js-cookie'
+import { currentEaselProfile } from "../feature/account";
 
 const EaselAuthContext = createContext();
 
@@ -14,6 +16,9 @@ export function EaselAuthProvider(props) {
         login: (private_key) => {
             handleLogin(private_key).then(success => {
                 setIsLoggedIn(success);
+                if(success) {
+                    Cookies.set('easel-user', currentEaselProfile);
+                }
             });
         },
         logout: () => {

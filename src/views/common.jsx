@@ -1,6 +1,7 @@
 import { Button, FileUpload, IconButton, TextEdit } from "../components/input";
 import { useEaselAuth } from "../context/authContext";
 import { useEaselOwner } from "../context/ownerContext";
+import { currentEaselProfile, followUser } from "../feature/account";
 
 import { publishRSS, syncServer } from "../feature/blog";
 import { Menu } from "./menu";
@@ -34,7 +35,7 @@ const Header = () => {
             </div>
             <div style={{ display: 'flex', 'flex-direction': 'column', gap: '10px', 'text-align': 'right' }}>
                 {!isLoggedIn() && <Button value="Follow" name="follow" onClick={() => {
-                    alert(`Followed!`)
+                    followUser(currentEaselProfile)
                 }} />}
 
             </div>
