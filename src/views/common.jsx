@@ -79,7 +79,7 @@ const AnonymousMenu = () => {
 
     return <>
         <IconButton onClick={() => {
-            const private_key = prompt("Enter private key (Saved locally)");
+            const private_key = prompt("Enter private key (Never saved!)");
             login(private_key);
         }}>
             <box-icon name='user' size="md" color="#bbb"></box-icon>
