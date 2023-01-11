@@ -41,8 +41,9 @@ $metadata_JSON = json_encode($metadata);
 <meta property="og:image" content="<?php echo $metadata->{'headerPicture'} ?>" />
 <meta property="og:description" content="<?php echo $metadata->{'description'} ?>" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="<?php echo $metadata->{'profilePicture'} ?>">
-<meta name="apple-touch-fullscreen" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="<?php echo $metadata->{'profilePicture'} ?>"/>
+<meta name="apple-touch-fullscreen" content="yes"/>
