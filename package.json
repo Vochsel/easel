@@ -29,11 +29,16 @@
   "dependencies": {
     "babel-preset-solid": "^1.6.7",
     "boxicons": "^2.1.4",
+    "buffer": "^6.0.3",
     "crypto-js": "^4.1.1",
+    "feed": "^4.2.2",
     "hotkeys-js": "^3.10.1",
     "js-cookie": "^3.0.1",
     "jsencrypt": "3.2.1",
+    "linkify-html": "^4.1.0",
+    "linkifyjs": "^4.1.0",
     "showdown": "^2.1.0",
-    "solid-js": "^1.6.7"
+    "solid-js": "^1.6.7",
+    "stream": "^0.0.2"
   }
 }

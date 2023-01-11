@@ -1,12 +1,14 @@
 html {
     width: 100vw;
     overflow-x: hidden;
+    background-color: white;
 }
 
 body {
     font-family: 'Inter';
     width: 50%;
     margin: 0 auto;
+    background-color: white;
 }
 
 #footer {
@@ -203,7 +205,7 @@ body {
     }
 
     #headerPicture {
-        height: 500 !important;
+        height: 200px !important;
     }
 
     #profile {

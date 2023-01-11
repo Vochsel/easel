@@ -98,7 +98,7 @@ async function loadContent(dir) {
 
 function fetchContent(dir) {
     return new Promise(async resolve => {
-        const items = await loadContent(location.pathname + "content/feed");
+        const items = await loadContent(location.pathname + "/content/feed");
         resolve(items);
     });
 }
