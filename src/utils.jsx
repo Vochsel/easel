@@ -14,6 +14,7 @@ const parseContent = (raw_content) => {
 
     const options = {
         /* … */
+        target: "_blank",
     };
 
     return linkifyHtml(_content, options);
