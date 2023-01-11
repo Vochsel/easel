@@ -1,3 +1,6 @@
+import { fetchContent, loadContentFromManifest, loadManifest } from "../loaders";
+import { generateRSSFeed } from "./rss";
+
 const postItem = async (value) => {
     let formData = new FormData();
     formData.append('new_post', value);
@@ -43,9 +46,16 @@ const uploadItem = async (file) => {
 }
 
 const publishRSS = async () => {
+    // TODO: When merged, use new feed context
+    const metadata = await fetch('./easel.json').then(x => x.json());
+    const manifest = await loadManifest(location.pathname + "content/feed");
+    const items = await loadContentFromManifest("./content/feed", manifest);
+    let rss_file = generateRSSFeed(metadata, items);
 
     let formData = new FormData();
-    formData.append('publish_rss', true);
+    formData.append('write_file', true);
+    formData.append('path', "./rss.xml");
+    formData.append('contents', rss_file);
 
     return fetch("api.php", {
         method: 'POST',
