@@ -6,30 +6,37 @@ import { Button, FileUploadInvisible, IconButton, TextEdit } from "../components
 import { deleteItem, editItem, postItem, uploadItem } from "../feature/blog";
 import 'boxicons';
 import hotkeys from 'hotkeys-js';
+import { EaselFeedProvider, useEaselFeed } from "../context/feedContext";
+
+const EditButtons = (props) => {
+    return <span>
+        <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
+            props.setIsEditing(!props.isEditing());
+            if (!props.isEditing()) {
+                editItem(props.content(), props?.source);
+            }
+        }}>
+            {props.isEditing() ?
+                <box-icon type='solid' name='save' size='2.5vh' color="#777" /> :
+                <box-icon type='solid' name='edit' size='2.5vh' color="#777" />
+            }
+        </IconButton>
+        <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
+            deleteItem(props?.source).then(x => console.log(x)).then(() => location.reload());
+        }}>
+            <box-icon type='solid' name='trash' size='2.5vh' color="#777" />
+        </IconButton>
+    </span>
+}
 
 const ItemMetadata = (props) => {
+
     const { isLoggedIn } = useEaselAuth();
 
-    const editButton = <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
-        props.setIsEditing(!props.isEditing());
-        if (!props.isEditing()) {
-            editItem(props.content(), props.item()?.source);
-        }
-    }}>
-        {props.isEditing() ?
-            <box-icon type='solid' name='save' size='2.5vh' color="#777" /> :
-            <box-icon type='solid' name='edit' size='2.5vh' color="#777" />
-        }
-    </IconButton>;
-
-    const deleteButton = <IconButton style={{ display: 'inline', top: '6px', position: 'relative' }} onClick={() => {
-        deleteItem(props.item()?.source).then(x => console.log(x)).then(() => location.reload());
-    }}>
-        <box-icon type='solid' name='trash' size='2.5vh' color="#777" />
-    </IconButton>;
+    const { isEditable } = useEaselFeed();
 
     return <div className="metadata">
-        #<b>{props.item()?.item_name}</b> - {new Date(props.item()?.data?.lastModified).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })} {isLoggedIn() && editButton} {isLoggedIn() && deleteButton}
+        #<b>{props?.name}</b> {props.author && <span>{props.author}</span>} - {new Date(props?.lastModified).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' })} {isLoggedIn() && isEditable() && <EditButtons isEditing={props.isEditing} setIsEditing={props.setIsEditing} />}
     </div>;
 }
 
@@ -51,19 +58,25 @@ const Item = (props) => {
     const [isEditing, setIsEditing] = createSignal(false);
     const [content, setContent] = createSignal("");
 
-    const [item] = createResource(async () => {
-        return new Promise(async resolve => {
-            const item = await loadItem(location.pathname + "content/feed", props.source);
-            resolve(item);
-            console.log(item)
-            setContent(item.data.content);
-        })
-    });
+    let item = props.item;
+    console.log(item)
+
+    let name = item.item_name;
+
+    setContent(item.data.content);
 
     return <div className="item">
         <hr />
-        <ItemMetadata item={item} isEditing={isEditing} setIsEditing={setIsEditing} content={content} />
-        <ItemContent item={item} isEditing={isEditing} content={content} setContent={setContent} />
+        <ItemMetadata
+            name={name}
+            author={item?.author}
+            lastModified={item.data.lastModified}
+            source={item.source}
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            content={content}
+        />
+        <ItemContent isEditing={isEditing} content={content} setContent={setContent} />
     </div>;
 }
 
@@ -79,7 +92,7 @@ const NewItem = (props) => {
         postRef.click();
     })
 
-
+    const { addNewItem } = useEaselFeed();
 
     return <div className="item" style={{ "text-align": 'right' }}>
         <hr />
@@ -100,8 +113,10 @@ const NewItem = (props) => {
             }}>
                 <box-icon name='image-add' size='40px' color="#777" />
                 <FileUploadInvisible ref={uploadRef} onChange={() => {
-                    // TODO: Make the feed refresh without a reload
-                    uploadItem(uploadRef.files[0]).then(() => location.reload())
+                    uploadItem(uploadRef.files[0]).then(item => {
+                        // TODO: Figure out pathing and abs/rel...
+                        addNewItem(item.path.split('/').slice(-1)[0]);
+                    });
                 }} />
             </IconButton>
 
@@ -109,8 +124,10 @@ const NewItem = (props) => {
                 "margin-bottom": '5px',
                 "margin-top": '10px',
             }} value="Post" onClick={() => {
-                // TODO: Make the feed refresh without a reload
-                postItem(textRef.value).then(() => location.reload())
+                postItem(textRef.value).then(item => {
+                    // TODO: Figure out pathing and abs/rel...
+                    addNewItem(item.path.split('/').slice(-1)[0]);
+                });
 
             }} />
         </div>
@@ -118,27 +135,26 @@ const NewItem = (props) => {
 }
 
 const FeedItems = () => {
-    const [files] = createResource(location.pathname + "content/feed", loadManifest);
 
+    const { items } = useEaselFeed();
     const { isLoggedIn } = useEaselAuth();
 
     return <div>
         {isLoggedIn() && <NewItem />}
-        <For each={files()}>
-            {(file, i) => <Suspense fallback={<p>Loading</p>}>
-                <Item source={file} />
+        <For each={items()}>
+            {(item, i) => <Suspense fallback={<p>Loading</p>}>
+                <Item item={item} />
             </Suspense>
             }
         </For>
+        {items().length == 0 && <p>Loading...</p>}
     </div>;
 }
 
-const Feed = () => {
-    return <div>
-        <Suspense fallback={<p>Loading...</p>}>
-            <FeedItems />
-        </Suspense>
-    </div>;
+const Feed = (props) => {
+    return <EaselFeedProvider {...props}>
+        <FeedItems />
+    </EaselFeedProvider>;
 }
 
 export { Item, Feed };

@@ -1,9 +1,13 @@
 import { Button, FileUpload, IconButton, TextEdit } from "../components/input";
 import { useEaselAuth } from "../context/authContext";
+import { useEaselOwner } from "../context/ownerContext";
+import { currentEaselProfile, followUser } from "../feature/account";
 
 import { publishRSS, syncServer } from "../feature/blog";
+import { Menu } from "./menu";
 
-const Header = ({ metadata }) => {
+const Header = () => {
+    const { metadata, following, followers } = useEaselOwner();
     const { isLoggedIn } = useEaselAuth();
 
     return <div id='profile'>
@@ -11,29 +15,34 @@ const Header = ({ metadata }) => {
             <img
                 id='headerProfile'
                 className="profilePicture"
-                src={metadata.profilePicture}
+                src={metadata().profilePicture}
                 width={75}
                 height={75}
                 crossOrigin
             />
             <img
                 id='headerPicture'
-                src={metadata.headerPicture}
+                src={metadata().headerPicture}
                 crossOrigin
             />
         </div>
         <div style={{ display: 'flex' }}>
             <div style={{ 'flex-grow': 1 }}>
-                <span id='name'>{metadata.name}</span>
-                <span id='handle'>@{metadata.handle}</span>
-                <div id='description' innerHTML={metadata.description}></div>
-                <Nav />
+                <span id='name'>{metadata().name}</span>
+                <span id='handle'>@{metadata().handle}</span>
+                <div id='description' innerHTML={metadata().description}></div>
+                <Menu />
             </div>
-            <div>
+            <div style={{ display: 'flex', 'flex-direction': 'column', gap: '10px', 'text-align': 'right' }}>
                 {!isLoggedIn() && <Button value="Follow" name="follow" onClick={() => {
-                    alert(`Followed!`)
+                    followUser(currentEaselProfile)
                 }} />}
+
             </div>
+        </div>
+        <div style={{ display: 'flex', gap: '10px', 'padding-top': '10px' }}>
+            <span id="follower_count"><b>Followers: </b>{followers().length}</span>
+            <span id="following_count"><b>Following: </b>{following().length}</span>
         </div>
     </div>;
 }
@@ -44,59 +53,4 @@ const Footer = () => {
     </div>;
 }
 
-const UserMenu = () => {
-    const { logout } = useEaselAuth();
-    return <>
-        <IconButton onClick={() => {
-            logout();
-        }}>
-            <box-icon type='solid' name='user' size="3vh" color="#bbb"></box-icon>
-        </IconButton>
-        <IconButton onClick={() => {
-            publishRSS().then(x => {
-                console.log(x);
-            });
-        }}>
-            <box-icon name='rss' size="3vh" color="#bbb"></box-icon>
-        </IconButton>
-        <IconButton onClick={() => {
-            const version = prompt("Easel version preference:", "latest");
-            syncServer(version).then(x => {
-                console.log(x);
-                location.reload();
-            });
-        }}>
-            <box-icon name='sync' size="3vh" color="#bbb"></box-icon>
-        </IconButton>
-
-        {/* <Button name="publish_rss" value="Update RSS" />
-        <Button name="update_easel" value="Update easel.php" /> */}
-    </>;
-}
-
-const AnonymousMenu = () => {
-    const { login } = useEaselAuth();
-
-    return <>
-        <IconButton onClick={() => {
-            const private_key = prompt("Enter private key (Never saved!)");
-            login(private_key);
-        }}>
-            <box-icon name='user' size="md" color="#bbb"></box-icon>
-        </IconButton>
-    </>;
-}
-
-const Nav = () => {
-    const { isLoggedIn } = useEaselAuth();
-
-    return <div id="nav">
-        <form method="POST" encType="multipart/form-data" >
-
-            {isLoggedIn() ? <UserMenu /> : <AnonymousMenu />}
-
-        </form>
-    </div>;
-}
-
-export { Header, Footer, Nav };
+export { Header, Footer };

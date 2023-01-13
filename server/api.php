@@ -32,6 +32,13 @@ function getCurrentURL()
     return $url;
 }
 
+function ensureFolder($path)
+{
+    if (!file_exists($path)) {
+        mkdir($path, 0777, true);
+    }
+}
+
 $CDN_PREFIX = "../../";
 
 if (!isLocalhost()) {
@@ -54,6 +61,8 @@ function post($dir, $name, $contents)
     $fileContents = file_get_contents($manifest_path);
 
     file_put_contents($manifest_path, $name . "\n" . $fileContents);
+
+    return $file_path;
 }
 
 function post_latest($directory, $contents)
@@ -61,14 +70,19 @@ function post_latest($directory, $contents)
     $files = glob($directory . "/**.md");
 
     //Put each file name into an array called $filenames
-    foreach($files as $i => $file) $filenames[$i] = basename($file);
+    foreach ($files as $i => $file)
+        $filenames[$i] = basename($file);
 
-    //Sort $filenames
-    rsort($filenames, SORT_NUMERIC );
-    $fn = (int) filter_var($filenames[0], FILTER_SANITIZE_NUMBER_INT);
-    $fn += 1;
+    try {
+        //Sort $filenames
+        rsort($filenames, SORT_NUMERIC);
+        $fn = (int) filter_var($filenames[0], FILTER_SANITIZE_NUMBER_INT);
+        $fn += 1;
+    } catch (\Throwable $th) {
+        $fn = "1";
+    }
 
-    post($directory, $fn . ".md", $contents);
+    return post($directory, $fn . ".md", $contents);
 }
 
 function edit($dir, $name, $contents)
@@ -117,24 +131,26 @@ function upload($dir)
 
     if ($uploadOk == 0) {
         echo "Sorry, your file was not uploaded.";
+        return "";
         // if everything is ok, try to upload file
     } else {
         if (move_uploaded_file($_FILES["upload_media"]["tmp_name"], $target_file)) {
             if ($target_file_extension == "glb") {
-                post_latest("./content/feed", "<model-viewer class='media'
+                return post_latest("./content/feed", "<model-viewer class='media'
                     src='$file_url' ar shadow-intensity='1' camera-controls
                     touch-action='pan-y'></model-viewer>
                 ");
             } else if (in_array($target_file_extension, array("png", "jpg", "webp", "svg", "jpeg", "bmp"))) {
-                post_latest("./content/feed", "<img class='media' src='$file_url' width='100%' height='100%'/>");
+                return post_latest("./content/feed", "<img class='media' src='$file_url' width='100%' height='100%'/>");
             } else if (in_array($target_file_extension, array("wav", "mp3", "ogg"))) {
-                post_latest("./content/feed", "<audio class='media' src='$file_url' width='100%' height='100%' controls/>");
+                return post_latest("./content/feed", "<audio class='media' src='$file_url' width='100%' height='100%' controls/>");
             } else if ($target_file_extension == "mp4") {
-                post_latest("./content/feed", "<video class='media' src='$file_url' width='100%' height='100%' muted autoplay playsInline controls/>");
+                return post_latest("./content/feed", "<video class='media' src='$file_url' width='100%' height='100%' muted autoplay playsInline controls/>");
             }
             echo "The file " . htmlspecialchars(basename($_FILES["upload_media"]["name"])) . " has been uploaded.";
         } else {
             echo "Sorry, there was an error uploading your file.";
+            return "";
         }
     }
 }
@@ -205,11 +221,11 @@ function login($signature)
     $sig64 = base64_decode($signature);
     $result = openssl_verify("easel", $sig64, $public_key, OPENSSL_ALGO_SHA256);
 
-    if($result == 1) {
+    if ($result == 1) {
         // Succesful login
         $_SESSION['logged_in'] = true;
         $_SESSION['metadata'] = $metadata;
-        
+
         $output = new stdClass();
         $output->result = isset($_SESSION['logged_in']) || !$_SESSION['logged_in'];
         die(json_encode($output));
@@ -229,6 +245,37 @@ function logout()
     $output = new stdClass();
     $output->result = true;
     die(json_encode($output));
+}
+
+function addFollower($follower)
+{
+    ensureFolder("./.easel");
+    $source = "./.easel/followers.txt";
+
+    // TODO: Stop opening file twice
+    try {
+        $remote_contents = file_get_contents($source, true);
+        if (str_contains($remote_contents, $follower))
+            return false;
+    } catch (Throwable $t) {
+        return false;
+    }
+
+    $message = $follower . PHP_EOL;
+
+    file_put_contents($source, $message, FILE_APPEND);
+
+    return true;
+}
+
+function addFollowing($following)
+{
+    ensureFolder("./.easel");
+    $source = "./.easel/followers.txt";
+
+    $message = $following . PHP_EOL;
+
+    file_put_contents($source, $message, FILE_APPEND);
 }
 ?>
 
@@ -250,6 +297,17 @@ if (isset($_POST['is_logged_in']) && $_POST['is_logged_in'] != null) {
     die(json_encode($output));
 }
 
+
+if (isset($_POST['add_follower']) && $_POST['add_follower'] != null) {
+    $follower = $_POST['add_follower'];
+    $r = addFollower($follower);
+
+    $output = new stdClass();
+    $output->result = $r;
+    die(json_encode($output));
+}
+
+
 // Restrict access to other endpoints
 
 if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in'])
@@ -265,7 +323,11 @@ if (isset($_POST['update_easel']) && $_POST['update_easel'] != null) {
     update($_POST['update_easel']);
 }
 if (isset($_POST['has_upload']) && $_POST['has_upload'] != null) {
-    upload("uploads/");
+    $path = upload("uploads/");
+
+    $output = new stdClass();
+    $output->path = $path;
+    die(json_encode($output));
 }
 
 
@@ -280,9 +342,13 @@ if (isset($_POST['new_post']) && $_POST['new_post'] != null) {
         file_put_contents($directory . "/manifest.txt", "");
     }
 
-    post_latest($directory, $_POST['new_post']);
+    $path = post_latest($directory, $_POST['new_post']);
     $_POST = array();
     unset($_POST['new_post']);
+
+    $output = new stdClass();
+    $output->path = $path;
+    die(json_encode($output));
 }
 
 if (isset($_POST['edit_post']) && $_POST['edit_post'] != null) {
@@ -295,4 +361,10 @@ if (isset($_POST['delete_post']) && $_POST['delete_post'] != null) {
     $source_name = $_POST['delete_post'];
     deleteItem($directory, $source_name);
 }
+
+if (isset($_POST['add_following']) && $_POST['add_following'] != null) {
+    $follower = $_POST['add_following'];
+    addFollowing($follower);
+}
+
 ?>
