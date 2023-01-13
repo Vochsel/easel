@@ -59,4 +59,32 @@ const generateRSSFeed = (metadata, items) => {
     return feed.rss2();
 }
 
-export { generateRSSFeed };
+const parseRSSFeedContent = (xmlString, url) => {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlString, "text/xml");
+    console.log(url)
+
+    const items = [];
+
+    const title = xml.querySelector("title").textContent;
+
+    for (let i = 0; i < xml.querySelectorAll("item").length; i++) {
+        const item = xml.querySelectorAll("item")[i];
+        const itemObj = {
+            item_name: item.querySelector("title").textContent,
+            source: url + "/content/feed/" + item.querySelector("title").textContent + ".md",
+            author: title,
+            data: {
+                content: item.querySelector("description").textContent,
+                lastModified: item.querySelector("pubDate").textContent
+            }
+        }
+        items.push(itemObj)
+        // items.push(url + "/content/feed/" + item.querySelector("title").textContent + ".md");
+    }
+
+    return items;
+}
+
+
+export { generateRSSFeed, parseRSSFeedContent };

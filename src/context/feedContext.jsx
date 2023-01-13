@@ -1,17 +1,31 @@
-import { createSignal, createContext, useContext } from "solid-js";
-import { loadManifest } from "../loaders";
+import { createSignal, createContext, useContext, mergeProps } from "solid-js";
+import { loadContentFromList, loadManifest } from "../loaders";
 
 const EaselFeedContext = createContext();
 
+// Mode can be dynamic | manual
 export function EaselFeedProvider(props) {
-    const [items, setItems] = createSignal(props.metadata);
+    const merged = mergeProps({ isEditable: true, mode: 'dynamic' }, props);
 
-    loadManifest(location.pathname + "content/feed").then(files => {
-        setItems(files)
-    })
+    const [items, setItems] = createSignal([]);
+    const [isEditable, setIsEditable] = createSignal(merged.isEditable);
+
+
+    if (props.mode === 'manual') {
+        console.log('using manual');
+        props.getItems().then(items => {
+            setItems(items);
+        })
+    } else if (props.mode === 'dynamic') {
+        console.log('using dynamic');
+        loadManifest(props.source).then(list => loadContentFromList(list)).then(items => {
+            setItems(items);
+        });
+    }
 
     const context = {
         items,
+        isEditable,
         addNewItem: (item) => {
             console.log(items())
             // This allows us to show new posts without refreshing

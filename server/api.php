@@ -73,10 +73,14 @@ function post_latest($directory, $contents)
     foreach ($files as $i => $file)
         $filenames[$i] = basename($file);
 
-    //Sort $filenames
-    rsort($filenames, SORT_NUMERIC);
-    $fn = (int) filter_var($filenames[0], FILTER_SANITIZE_NUMBER_INT);
-    $fn += 1;
+    try {
+        //Sort $filenames
+        rsort($filenames, SORT_NUMERIC);
+        $fn = (int) filter_var($filenames[0], FILTER_SANITIZE_NUMBER_INT);
+        $fn += 1;
+    } catch (\Throwable $th) {
+        $fn = "1";
+    }
 
     return post($directory, $fn . ".md", $contents);
 }

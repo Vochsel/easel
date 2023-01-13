@@ -112,6 +112,33 @@ body {
 }
 
 
+/* TABS */
+
+#tabNames {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-between; */
+    margin-bottom: 1vw;
+    text-align: center;
+}
+
+.tabButton {
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+    user-select: none;
+}
+
+.tabButton:hover {
+    opacity: 0.6;
+}
+
+.tabButton:active {
+    opacity: 0.3;
+    transition: opacity 0.2s;
+}
+
+
 
 /* POSTS */
 

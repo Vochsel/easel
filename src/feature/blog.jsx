@@ -1,6 +1,7 @@
 import { fetchContent, loadContentFromManifest, loadManifest } from "../loaders";
 import { parseContent } from "../utils";
-import { generateRSSFeed } from "./rss";
+import { getFollowing } from "./account";
+import { generateRSSFeed, parseRSSFeedContent } from "./rss";
 
 const postItem = async (value) => {
     let formData = new FormData();
@@ -26,8 +27,8 @@ const editItem = async (new_value, path) => {
     }).then(x => x.text());
 }
 
-const deleteItem = async(path) => {
-    
+const deleteItem = async (path) => {
+
     let formData = new FormData();
     formData.append('delete_post', path);
 
@@ -77,4 +78,22 @@ const syncServer = async (version = "latest") => {
     }).then(x => x.text());
 }
 
-export { postItem, editItem, uploadItem, publishRSS, syncServer, deleteItem };
+const loadFollowingFeed = async () => {
+    var _items = [];
+    await getFollowing(window.location.href).then(async following => {
+        for (let i = 0; i < following.length; i++) {
+            let follow = following[i];
+
+            console.log(follow)
+
+            const rss = await fetch(follow + "/rss.xml").then(x => x.text());
+            _items = [..._items, ...parseRSSFeedContent(rss, follow)];
+
+        }
+
+    });
+    console.log(_items)
+    return _items;
+}
+
+export { postItem, editItem, uploadItem, publishRSS, syncServer, deleteItem, loadFollowingFeed };

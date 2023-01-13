@@ -9,7 +9,7 @@ function loadFile(path) {
             if (data.ok) {
                 const content = await data.text();
                 let lastModified = data.headers.get('Last-Modified');
-                if(!lastModified) lastModified = "1966-11-06";
+                if (!lastModified) lastModified = "1966-11-06";
 
                 resolve({
                     lastModified,
@@ -25,7 +25,7 @@ function loadFile(path) {
 
 function loadManifest(path) {
     return loadFile(path + `/manifest.txt?cache_hack=${Date.now()}`).then(data => {
-        return data.content.split('\n').filter(n => n)
+        return data.content.split('\n').filter(n => n).map(i => path + "/" + i);
     });
 }
 
@@ -87,6 +87,24 @@ async function loadContentFromManifest(dir, files) {
     return output;
 }
 
+async function loadContentFromList(files) {
+    console.log(`Loading and found ${files.length} items`)
+
+    let promises = [];
+    for (let i = 0; i < files.length; i++) {
+        const item_name = files[i].split('.')[0].split('/').pop();
+
+        promises.push(loadFile(`${files[i]}`).then(data => {
+            return {
+                data,
+                item_name,
+                source: files[i]
+            }
+        }));
+    }
+    return Promise.all(promises);
+}
+
 async function loadContent(dir) {
     return loadContentFromManifest(dir).catch(x => {
         console.log(x);
@@ -103,4 +121,4 @@ function fetchContent(dir) {
     });
 }
 
-export { loadFile, loadManifest, loadContentFromManifest, fetchContent, loadItem }
+export { loadFile, loadManifest, loadContentFromManifest, fetchContent, loadItem, loadContentFromList }
